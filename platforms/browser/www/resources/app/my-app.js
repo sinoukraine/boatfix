@@ -1522,7 +1522,7 @@ App.onPageInit('asset.alarm', function (page) {
         /*if (alarm.is(":checked")) {
             alarmOptions.alarm = true;
         }*/
-
+            
         $.each(alarmFields, function( index, value ) {
             var field = $$(page.container).find('input[name = "radio-'+value+'"]');
             console.log(field);

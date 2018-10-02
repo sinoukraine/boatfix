@@ -1488,17 +1488,19 @@ App.onPageInit('resetPwd', function (page) {
 });
 
 App.onPageInit('asset.alarm', function (page) {
-    var alarm = $$(page.container).find('input[name = "checkbox-alarm"]');    
+    //var alarm = $$(page.container).find('input[name = "checkbox-alarm"]');    
 
     var alarmFields = ['bilge','power','accOn','geolock','accOff'];  
+
+    //var 
    
 
-    var allCheckboxesLabel = $$(page.container).find('label.item-content');
-    var allCheckboxes = allCheckboxesLabel.find('input');
+    /*var allCheckboxesLabel = $$(page.container).find('label.item-content');
+    var allCheckboxes = allCheckboxesLabel.find('input');*/
 
     
 
-    alarm.on('change', function(e) { 
+    /*alarm.on('change', function(e) { 
         if( $$(this).prop('checked') ){
             allCheckboxes.prop('checked', true);
         }else{
@@ -1510,24 +1512,22 @@ App.onPageInit('asset.alarm', function (page) {
         if( $$(this).prop('checked') ){
             alarm.prop('checked', true);
         }
-    });    
+    });    */
     
     $$('.saveAlarm').on('click', function(e){        
         var alarmOptions = {
             IMEI: TargetAsset.ASSET_IMEI,
             options: 0,            
         };
-        if (alarm.is(":checked")) {
+        /*if (alarm.is(":checked")) {
             alarmOptions.alarm = true;
-        }
+        }*/
 
         $.each(alarmFields, function( index, value ) {
-            var field = $$(page.container).find('input[name = "checkbox-'+value+'"]');
-            if (!field.is(":checked")) {
-                
+            var field = $$(page.container).find('input[name = "radio-'+value+'"]');
+            console.log(field);
+            if (!field.is(":checked")) {                
                 alarmOptions.options = alarmOptions.options + parseInt(field.val(), 10);
-            }else{
-                
             }
         });   
         
@@ -1537,7 +1537,7 @@ App.onPageInit('asset.alarm', function (page) {
                 alarmOptions.options                                
             );                    
         console.log(url);
-        App.showPreloader();
+        /*App.showPreloader();
         JSON1.request(url, function(result){ 
                 console.log(result);                  
                 if (result.MajorCode == '000') {                    
@@ -1550,7 +1550,7 @@ App.onPageInit('asset.alarm', function (page) {
                 App.hidePreloader();
             },
             function(){ App.hidePreloader(); App.alert(LANGUAGE.COM_MSG16); }
-        ); 
+        ); */
         
     });
         

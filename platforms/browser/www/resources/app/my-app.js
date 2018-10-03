@@ -545,12 +545,12 @@ $$('#menu li').on('click', function () {
     }
 });
 
-$$('body').on('click', '.navbar_title, .navbar_title_index', function(){
+/*$$('body').on('click', '.navbar_title, .navbar_title_index', function(){
     var json = '{"title":"GEOLOCK WARNING","type":1024,"imei":"0000001700091735","name":"0000001700091735","lat":43.895091666666666,"lng":125.29207,"speed":0,"direct":0,"time":"2018-08-23 16:56:36"}';
     showMsgNotification([json]);
     //getNewData();
     //console.log($$('.status_page').length);
-});
+});*/
 
 $$(document).on('click', 'a.tab-link', function(e){
     e.preventDefault();   

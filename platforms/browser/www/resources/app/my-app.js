@@ -781,8 +781,6 @@ App.onPageInit('forgotPwdNew', function(page) {
 
 App.onPageInit('asset.status', function (page) { 
 
-    
-
     var Fuel = $$(page.container).find('.position_fuel');
     var Voltage = $$(page.container).find('.position_voltage');
     var Battery = $$(page.container).find('.position_battery');
@@ -791,21 +789,8 @@ App.onPageInit('asset.status', function (page) {
     var EngineHours = $$(page.container).find('.position_engineHours');
     var StoppedDuration = $$(page.container).find('.position_stoppedDuration');
    
-
     var clickedLink = '';
     var popoverHTML = '';
-
-
-
-
-
-    //open-time
-
-
-    //open-mileage
-
-
-
 
     $$(page.container).find('.open-gsm').on('click', function () {
         clickedLink = this;            
@@ -936,23 +921,7 @@ App.onPageInit('asset.status', function (page) {
             App.popover(popoverHTML, clickedLink);            
         });
     } 
-        /*$$(page.container).find('.open-immob').on('click', function () {
-            clickedLink = this;            
-            popoverHTML = '<div class="popover popover-status">'+                      
-                          '<p class="color-dealer">'+LANGUAGE.ASSET_STATUS_MSG25+'</p>'+
-                          '<p>'+LANGUAGE.ASSET_STATUS_MSG42+'</p>'+                       
-                    '</div>';
-            App.popover(popoverHTML, clickedLink);            
-        });  */      
-    
-
-
-    
-    
-    
-    
-     
-  
+         
 
     $$('.buttonAssetEdit').on('click', function(){
          
@@ -966,7 +935,7 @@ App.onPageInit('asset.status', function (page) {
             }
         }
 
-        console.log(asset);
+
         mainView.router.load({
         url:'resources/templates/asset.edit.html',
             context:{                
@@ -1019,7 +988,7 @@ App.onPageInit('asset.edit', function (page) {
 
     $$('.saveAssetEdit').on('click', function(){
         var mileage = $$(page.container).find('input[name="Mileage"]').val() ? $$(page.container).find('input[name="Mileage"]').val() : 0;
-        var runTime = $$(page.container).find('input[name="Runtime"]').val() ? $$(page.container).find('input[name="Runtime"]').val() : 0
+        var runTime = $$(page.container).find('input[name="Runtime"]').val() ? $$(page.container).find('input[name="Runtime"]').val() : 0;
         var device = {
             IMEI: $$(page.container).find('input[name="IMEI"]').val(),
             Name: $$(page.container).find('input[name="Name"]').val(),
@@ -1033,7 +1002,7 @@ App.onPageInit('asset.edit', function (page) {
             Describe4: $$(page.container).find('input[name="Describe4"]').val(),
             Icon: TargetAsset.ASSET_IMG,    
         };
-        console.log(device);
+
         var userInfo = getUserinfo();         
         var url = API_URL.URL_EDIT_DEVICE.format(userInfo.MinorToken,
                 TargetAsset.ASSET_ID,
@@ -1050,7 +1019,7 @@ App.onPageInit('asset.edit', function (page) {
                 userInfo.MajorToken
             );
     
-        console.log(url);
+
         App.showPreloader();
         JSON1.request(url, function(result){ 
                 console.log(result);                  
@@ -1290,7 +1259,7 @@ App.onPageInit('alarms.select', function (page) {
                 alarmOptions.IMEI,
                 alarmOptions.options                                
             );                    
-        console.log(url);
+
         App.showPreloader();
         JSON1.request(url, function(result){ 
                 console.log(result);                  
@@ -1379,7 +1348,7 @@ App.onPageInit('geofence', function (page) {
         if(a.Name > b.Name) return 1;
         return 0;
     });    
-    console.log(arrGeofenceList);
+
     if (virtualGeofenceList) {
         virtualGeofenceList.destroy();
     }
@@ -1666,10 +1635,10 @@ App.onPageInit('resetPwd', function (page) {
                         encodeURIComponent(password.old),
                         encodeURIComponent(password.new)             
                     ); 
-                //console.log(url);
+
                 App.showPreloader();
                 JSON1.request(url, function(result){ 
-                        //console.log(result);                  
+                
                         if (result.MajorCode == '000') { 
                             App.alert(LANGUAGE.PROMPT_MSG003, function(){
                                 logout();
@@ -1708,7 +1677,7 @@ App.onPageInit('asset.alarm', function (page) {
                 alarmOptions.IMEI,
                 alarmOptions.options                                
             );                    
-        console.log(url);
+
         App.showPreloader();
         JSON1.request(url, function(result){ 
                 console.log(result);                  
@@ -2056,9 +2025,7 @@ App.onPageInit('asset.track', function (page) {
                 updateMarkerPositionTrack(data);
             }, 10000);  
 
-    $$('[name = "radio-geolock-set" ]').on('change', function(e) { 
-        console.log($$(this).val());
-    }); 
+
 
     /*var geolock = $$(page.container).find('input[name = "Geolock" ]');
     geolock.on('change', function(){        
@@ -2878,7 +2845,7 @@ function loadStatusPage(){
         if (asset.posInfo.positionTime) {
             time = asset.posInfo.positionTime.format(window.COM_TIMEFORMAT);
         }
-        console.log(assetFeaturesStatus.status);
+
         var latlng = {};
         latlng.lat = asset.posInfo.lat;
         latlng.lng = asset.posInfo.lng;  
@@ -3141,11 +3108,47 @@ function checkMapExisting(){
     }   
 }
 
-function getMarkerDataTable(asset){
+function getMarkerDataTable(asset, positionDetails){
     //console.log(asset);
     var markerData = '';
-    
-    if (asset ) {
+    var customAddress = LANGUAGE.COM_MSG08;
+    if (asset && positionDetails) {
+        customAddress = !positionDetails.customAddress ? LANGUAGE.COM_MSG08 : positionDetails.customAddress;
+        markerData += '<table cellpadding="0" cellspacing="0" border="0" class="marker-data-table">';
+            if (positionDetails.status) {
+        markerData +=   '<tr>';
+        markerData +=       '<td class="marker-data-caption">'+LANGUAGE.ASSET_TRACK_MSG07+'</td>';
+        markerData +=       '<td class="marker-data-value">'+positionDetails.status+'</td>';
+        markerData +=   '</tr>';         
+            }     
+        markerData +=   '<tr>';
+        markerData +=       '<td class="marker-data-caption">'+LANGUAGE.ASSET_TRACK_MSG13+'</td>';
+        markerData +=       '<td class="marker-data-value">'+positionDetails.time+'</td>';
+        markerData +=   '</tr>';
+            if (positionDetails.mileage) {
+        markerData +=   '<tr>';
+        markerData +=       '<td class="marker-data-caption">'+LANGUAGE.ASSET_TRACK_MSG03+'</td>';
+        markerData +=       '<td class="marker-data-value">'+positionDetails.mileage+'</td>';
+        markerData +=   '</tr>';         
+            }        
+        markerData +=   '<tr>';
+        markerData +=       '<td class="marker-data-caption">'+LANGUAGE.ASSET_TRACK_MSG02+'</td>';
+        markerData +=       '<td class="marker-data-value">'+positionDetails.speed+'</td>';
+        markerData +=   '</tr>';                            
+        markerData +=   '<tr>';
+        markerData +=       '<td class="marker-data-caption">'+LANGUAGE.ASSET_TRACK_MSG01+'</td>';
+        markerData +=       '<td class="marker-data-value">'+positionDetails.direction+'</td>';
+        markerData +=   '</tr>';                           
+        markerData +=   '<tr>';
+        markerData +=       '<td class="marker-data-caption">GPS</td>';
+        markerData +=       '<td class="marker-data-value ">'+ parseFloat(positionDetails.latlng.lat).toFixed(5) + ', ' + parseFloat(positionDetails.latlng.lng).toFixed(5) +'</td>';
+        markerData +=   '</tr>';
+        markerData +=   '<tr>';
+        markerData +=       '<td class="marker-data-caption">'+LANGUAGE.ASSET_TRACK_MSG11+'</td>';
+        markerData +=       '<td class="marker-data-value ">'+ customAddress + '</td>';
+        markerData +=   '</tr>';
+        markerData += '</table>';
+    }else if (asset ) {
         var assetFeaturesStatus = Protocol.Helper.getAssetStateInfo(asset);
         if (assetFeaturesStatus && assetFeaturesStatus.stats) {
             var speed = 0;
@@ -3158,7 +3161,7 @@ function getMarkerDataTable(asset){
             if (typeof asset.Unit !== "undefined" && typeof asset.posInfo.mileage !== "undefined" && asset.posInfo.mileage != '-') {
                 mileage = (Protocol.Helper.getMileageValue(asset.Unit, asset.posInfo.mileage) + parseInt(asset.InitMileage) + parseInt(asset._FIELD_FLOAT7)) + '&nbsp;' + Protocol.Helper.getMileageUnit(asset.Unit);
             }
-            var customAddress = !asset.posInfo.customAddress ? LANGUAGE.COM_MSG08 : asset.posInfo.customAddress;
+            customAddress = !asset.posInfo.customAddress ? LANGUAGE.COM_MSG08 : asset.posInfo.customAddress;
 
             markerData += '<table cellpadding="0" cellspacing="0" border="0" class="marker-data-table">';           
             markerData +=   '<tr>';
@@ -3329,24 +3332,26 @@ function getMarkerDataTableInfoPin(point){
     return markerData;      
 }
 
-/*function loadTrackPage(params){
+function loadTrackPage(params){
     //alert(JSON.stringify(params));
     var asset = POSINFOASSETLIST[TargetAsset.ASSET_IMEI];
         
     var details = {
         direct : '',
+        direction: '',
         speed : 0,
-        mileage : '-',
+        mileage : '',
         templateUrl : 'resources/templates/asset.track.html',
         latlng : {},
         name : '',
         time : '',
+        coords: '',
+        customAddress: '',
+        status: '',
     };
 //{"title":"Acc off","type":65536,"imei":"0352544073967920","name":"Landcruiser Perth","lat":-32.032898333333335,"lng":115.86817722222216,"speed":0,"direct":0,"time":"2018-04-13 10:16:51"}
     if ((params && parseFloat(params.lat) !== 0 && parseFloat(params.lng) !== 0) || (parseFloat(asset.posInfo.lat) !== 0 && parseFloat(asset.posInfo.lng) !== 0) ){     
-        if (params) {            
-            window.PosMarker[TargetAsset.ASSET_IMEI] = L.marker([params.lat, params.lng], {icon: Protocol.MarkerIcon[1]}); 
-            window.PosMarker[TargetAsset.ASSET_IMEI].setLatLng([params.lat, params.lng]);  
+        if (params) {
             if (asset && typeof asset.Unit !== "undefined" && typeof params.speed !== "undefined" ) {                 
                 details.speed = Protocol.Helper.getSpeedValue(asset.Unit, params.speed) + ' ' + Protocol.Helper.getSpeedUnit(asset.Unit);
             }
@@ -3356,12 +3361,11 @@ function getMarkerDataTableInfoPin(point){
             details.latlng.lng = params.lng;
             details.name = params.name;
             details.time = params.time;
-            details.direct = parseInt(params.direct);
+            details.direct = parseInt(params.direct);           
             
-        }else{            
-            window.PosMarker[TargetAsset.ASSET_IMEI] = L.marker([asset.posInfo.lat, asset.posInfo.lng], {icon: Protocol.MarkerIcon[1]}); 
-            window.PosMarker[TargetAsset.ASSET_IMEI].setLatLng([asset.posInfo.lat, asset.posInfo.lng]); 
-            details.direct = asset.posInfo.direct; 
+        }else{  
+            var assetFeaturesStatus = Protocol.Helper.getAssetStateInfo(asset); 
+            
             if (typeof asset.Unit !== "undefined" && typeof asset.posInfo.speed !== "undefined") {
                 details.speed = Protocol.Helper.getSpeedValue(asset.Unit, asset.posInfo.speed) + ' ' + Protocol.Helper.getSpeedUnit(asset.Unit);
             }        
@@ -3372,31 +3376,53 @@ function getMarkerDataTableInfoPin(point){
             details.latlng.lng = asset.posInfo.lng;
             details.name = asset.Name;
             details.time = asset.posInfo.positionTime.format(window.COM_TIMEFORMAT);
+            details.direct = parseInt(asset.posInfo.direct); 
+            details.status = toTitleCase(assetFeaturesStatus.status.value);
+
+            
+            if (assetFeaturesStatus.geolock) {
+                geolockState = assetFeaturesStatus.geolock.value;   
+
+                if (geolockState) {
+                    window.PosMarker[TargetAsset.ASSET_IMEI+'-geofence'] = L.circle([asset.posInfo.lat, asset.posInfo.lng], {radius: 100,color: 'red',fillColor: '#f03',fillOpacity: 0.2,});                    
+                }else{
+                    window.PosMarker[TargetAsset.ASSET_IMEI+'-geofence'] = false;
+                }                    
+            } 
         }
         
-        var deirectionCardinal = Protocol.Helper.getDirectionCardinal(details.direct);  
+        details.direction = Protocol.Helper.getDirectionCardinal(details.direct)+' ('+details.direct+'&deg;)';
+        details.coords = 'GPS: ' + Protocol.Helper.convertDMS(details.latlng.lat, details.latlng.lng);
+
+        var markerData = getMarkerDataTable(asset, details);
+        window.PosMarker[TargetAsset.ASSET_IMEI] = L.marker([details.latlng.lat, details.latlng.lng], {icon: Protocol.MarkerIcon[1]}); 
+        window.PosMarker[TargetAsset.ASSET_IMEI].setLatLng([details.latlng.lat, details.latlng.lng]); 
+        window.PosMarker[TargetAsset.ASSET_IMEI].bindPopup(markerData,{"maxWidth":260});
+
+        checkMapExisting();
         
-        checkMapExisting();        
+      
         mainView.router.load({
             url:details.templateUrl,
             context:{
                 Name: details.name,                           
                 Time: details.time,
-                Direction: deirectionCardinal+' ('+details.direct+'&deg;)', 
+                Direction: details.direction, 
                 Mileage: details.mileage,
                 Speed: details.speed,                    
                 Address: LANGUAGE.COM_MSG08,                
                 Lat: details.latlng.lat,
                 Lng: details.latlng.lng,
-                Coords: 'GPS: ' + Protocol.Helper.convertDMS(details.latlng.lat, details.latlng.lng),
+                Coords: details.coords,
             }
         });        
 
         Protocol.Helper.getAddressByGeocoder(details.latlng,function(address){
             $$('body .display_address').html(address);
 
-            asset.posInfo.customAddress = address;            
-            var newMarkerData = getMarkerDataTable(asset);
+            asset.posInfo.customAddress = address; 
+            details.customAddress = address; 
+            var newMarkerData = getMarkerDataTable(asset, details);
             window.PosMarker[TargetAsset.ASSET_IMEI].setPopupContent(newMarkerData);
         });
         
@@ -3404,9 +3430,9 @@ function getMarkerDataTableInfoPin(point){
         App.alert(LANGUAGE.PROMPT_MSG004);
     } 
         
-}*/
+}
 
-function loadTrackPage(positionMap){
+/*function loadTrackPage(positionMap){
    
     var asset = POSINFOASSETLIST[TargetAsset.ASSET_IMEI];
         
@@ -3445,9 +3471,6 @@ function loadTrackPage(positionMap){
             } 
         }
 
-        
-        
-
         var latlng = {};
         latlng.lat = asset.posInfo.lat;
         latlng.lng = asset.posInfo.lng;
@@ -3479,7 +3502,7 @@ function loadTrackPage(positionMap){
         App.alert(LANGUAGE.PROMPT_MSG004);
     }       
         
-}
+}*/
 
 function updateAssetData(parameters){    
     var userInfo = getUserinfo();  
@@ -3550,9 +3573,35 @@ function updateMarkerPositionTrack(data){
                 data.posLatlng.html('GPS: ' + Protocol.Helper.convertDMS(latlng.lat, latlng.lng));             
             }
            
+            var newMarkerData = getMarkerDataTable(asset);            
+            window.PosMarker[TargetAsset.ASSET_IMEI].setPopupContent(newMarkerData);
+            var popup = window.PosMarker[TargetAsset.ASSET_IMEI].getPopup();
+            if (popup.isOpen()) {
+                popup.update();
+            }else{
+                MapTrack.setView([asset.posInfo.lat, asset.posInfo.lng]);
+            }
+            
+           
             Protocol.Helper.getAddressByGeocoder(latlng,function(address){
-                data.posAddress.html(address);
+                if (data && data.posTime) {
+                    data.posAddress.html(address);
+                }                
+
+                asset.posInfo.customAddress = address;            
+                newMarkerData = getMarkerDataTable(asset);
+                window.PosMarker[TargetAsset.ASSET_IMEI].setPopupContent(newMarkerData);
+                if (popup.isOpen()) {
+                    popup.update();
+                }else{
+                    MapTrack.setView([asset.posInfo.lat, asset.posInfo.lng]);
+                }
+                
             });
+
+            /*Protocol.Helper.getAddressByGeocoder(latlng,function(address){
+                data.posAddress.html(address);
+            });*/
         }
             
 }
@@ -4022,7 +4071,7 @@ function setAlarmList(options){
         Geolock: options.Geolock,
         IgnitionOff: options.IgnitionOff,
     };
-    console.log(list);
+
     
     localStorage.setItem("COM.QUIKTRAK.LIVE.ALARMLIST", JSON.stringify(list));   
 }

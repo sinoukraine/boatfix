@@ -170,8 +170,6 @@ window.LanguagePackages= {
 		"ASSET_STATUS_MSG26": "Cell Reception",
 		"ASSET_STATUS_MSG27": "GPS",
 		"ASSET_STATUS_MSG28": "Power",
-		
-
 
 		"ASSET_STATUS_MSG29": "Ignition power - ON when engine is running and OFF when engine is off.",	
 		"ASSET_STATUS_MSG30": "Remote immobilisation - OFF is inactive, ON is active.",
@@ -187,7 +185,15 @@ window.LanguagePackages= {
 		"ASSET_STATUS_MSG40": "Displays the level of fuel in the tank.",
 		"ASSET_STATUS_MSG41": "Constant power detected",
 		"ASSET_STATUS_MSG42": "Immobilisation - red icon, when asset is immobilized, grey icon when asset unimmobilized.",
-		"ASSET_STATUS_MSG43": "Geolock - green icon, when Geolock is turned on, grey icon when Geolock turned off.",
+		"ASSET_STATUS_MSG43": "Geo Fence - green icon, when Geo Fence is turned off, red icon when Geo Fence turned on.",
+
+		"ASSET_STATUS_MSG44": "GSM Coverage",
+		"ASSET_STATUS_MSG45": "GPS Signal",
+		"ASSET_STATUS_MSG46": "Green - good, orange - avarge, red - bad , gray - no data",
+		"ASSET_STATUS_MSG47": "Current asset speed",
+		"ASSET_STATUS_MSG48": "Address, coordinates",
+		"ASSET_STATUS_MSG49": "Address with GPS coordinates(Latitude, Longitude) of current asset location",
+		"ASSET_STATUS_MSG50": "The distance that a asset has travelled",
 
 		
 

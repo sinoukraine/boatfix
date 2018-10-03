@@ -829,7 +829,7 @@ html:not(.watch-active-state) .button.btn_login.button-fill:active{
 		/* height: 206px; */
 		/* padding: 16px 16px 4px; */
     	box-sizing: border-box;
-    	text-align: center;
+    	text-align: left;
     	/* padding-top: 8px; */
     	
 	}
@@ -1433,7 +1433,11 @@ tossing
 }
 
 
-
+.popover-status {
+		    padding: 0 8px;
+		    width: auto;
+		    max-width: 320px;
+		}
 
 /* LOW CREDIT BALANCE MODAL */
 .custom-modal-logo-wrapper{

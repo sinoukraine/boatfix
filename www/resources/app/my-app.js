@@ -779,7 +779,181 @@ App.onPageInit('forgotPwdNew', function(page) {
 
 
 
-App.onPageInit('asset.status', function (page) {  
+App.onPageInit('asset.status', function (page) { 
+
+    
+
+    var Fuel = $$(page.container).find('.position_fuel');
+    var Voltage = $$(page.container).find('.position_voltage');
+    var Battery = $$(page.container).find('.position_battery');
+    var Temperature = $$(page.container).find('.position_temperature');
+    var Direction = $$(page.container).find('.position_direction');
+    var EngineHours = $$(page.container).find('.position_engineHours');
+    var StoppedDuration = $$(page.container).find('.position_stoppedDuration');
+   
+
+    var clickedLink = '';
+    var popoverHTML = '';
+
+
+
+
+
+    //open-time
+
+
+    //open-mileage
+
+
+
+
+    $$(page.container).find('.open-gsm').on('click', function () {
+        clickedLink = this;            
+        popoverHTML = '<div class="popover popover-status">'+                      
+                      '<p class="color-boatwatch">'+LANGUAGE.ASSET_STATUS_MSG44+'</p>'+
+                      '<p>'+LANGUAGE.ASSET_STATUS_MSG46+'</p>'+                       
+                '</div>';
+        App.popover(popoverHTML, clickedLink);            
+    }); 
+    $$(page.container).find('.open-gps').on('click', function () {
+        clickedLink = this;            
+        popoverHTML = '<div class="popover popover-status">'+                      
+                      '<p class="color-boatwatch">'+LANGUAGE.ASSET_STATUS_MSG45+'</p>'+
+                      '<p>'+LANGUAGE.ASSET_STATUS_MSG46+'</p>'+                       
+                '</div>';
+        App.popover(popoverHTML, clickedLink);            
+    }); 
+    $$(page.container).find('.open-power').on('click', function () {
+        clickedLink = this;            
+        popoverHTML = '<div class="popover popover-status">'+                      
+                      '<p class="color-boatwatch">'+LANGUAGE.ASSET_STATUS_MSG45+'</p>'+
+                      '<p>'+LANGUAGE.ASSET_STATUS_MSG46+'</p>'+                       
+                '</div>';
+        App.popover(popoverHTML, clickedLink);            
+    });     
+    $$(page.container).find('.open-geolock').on('click', function () {
+        clickedLink = this;            
+        popoverHTML = '<div class="popover popover-status">'+                      
+                      '<p class="color-boatwatch">'+LANGUAGE.ASSET_STATUS_MSG24+'</p>'+
+                      '<p>'+LANGUAGE.ASSET_STATUS_MSG43+'</p>'+                       
+                '</div>';
+        App.popover(popoverHTML, clickedLink);            
+    });  
+    $$(page.container).find('.open-speed').on('click', function () {
+        clickedLink = this;            
+        popoverHTML = '<div class="popover popover-status">'+                      
+                      '<p class="color-boatwatch">'+LANGUAGE.ASSET_STATUS_MSG02+'</p>'+
+                      '<p>'+LANGUAGE.ASSET_STATUS_MSG47+'</p>'+                       
+                '</div>';
+        App.popover(popoverHTML, clickedLink);            
+    });  
+    $$(page.container).find('.open-address').on('click', function () {
+        clickedLink = this;            
+        popoverHTML = '<div class="popover popover-status">'+                      
+                      '<p class="color-boatwatch">'+LANGUAGE.ASSET_STATUS_MSG48+'</p>'+
+                      '<p>'+LANGUAGE.ASSET_STATUS_MSG49+'</p>'+                       
+                '</div>';
+        App.popover(popoverHTML, clickedLink);            
+    }); 
+    $$(page.container).find('.open-mileage').on('click', function () {
+        clickedLink = this;            
+        popoverHTML = '<div class="popover popover-status">'+                      
+                      '<p class="color-boatwatch">'+LANGUAGE.ASSET_STATUS_MSG10+'</p>'+
+                      '<p>'+LANGUAGE.ASSET_STATUS_MSG50+'</p>'+                       
+                '</div>';
+        App.popover(popoverHTML, clickedLink);            
+    });  
+
+    if (Direction.text()) {
+        $$(page.container).find('.open-direction').on('click', function () {
+            clickedLink = this;            
+            popoverHTML = '<div class="popover popover-status">'+                      
+                          '<p class="color-boatwatch">'+LANGUAGE.ASSET_STATUS_MSG01+' - '+Direction.text()+'</p>'+
+                          '<p>'+LANGUAGE.ASSET_STATUS_MSG37+'</p>'+                       
+                    '</div>';
+            App.popover(popoverHTML, clickedLink);            
+        });
+    }     
+
+    if (Voltage.text()) {
+        $$(page.container).find('.open-voltage').on('click', function () {
+            clickedLink = this;            
+            popoverHTML = '<div class="popover popover-status">'+                      
+                          '<p class="color-boatwatch">'+LANGUAGE.ASSET_STATUS_MSG06+' - '+Voltage.text()+'</p>'+
+                          '<p>'+LANGUAGE.ASSET_STATUS_MSG33+'</p>'+                       
+                    '</div>';
+            App.popover(popoverHTML, clickedLink);            
+        });        
+    }    
+    if (Fuel.text()) {
+        $$(page.container).find('.open-fuel').on('click', function () {
+            clickedLink = this;            
+            popoverHTML = '<div class="popover popover-status">'+                      
+                          '<p class="color-boatwatch">'+LANGUAGE.ASSET_STATUS_MSG12+' - '+Fuel.text()+'</p>'+
+                          '<p>'+LANGUAGE.ASSET_STATUS_MSG40+'</p>'+                       
+                    '</div>';
+            App.popover(popoverHTML, clickedLink);            
+        });        
+    }  
+    if (Battery.text()) {
+        $$(page.container).find('.open-battery').on('click', function () {
+            clickedLink = this;            
+            popoverHTML = '<div class="popover popover-status">'+                      
+                          '<p class="color-boatwatch">'+LANGUAGE.ASSET_STATUS_MSG11+' - '+Battery.text()+'</p>'+
+                          '<p>'+LANGUAGE.ASSET_STATUS_MSG32+'</p>'+                       
+                    '</div>';
+            App.popover(popoverHTML, clickedLink);            
+        });
+    } 
+    if (Temperature.text()) {
+        $$(page.container).find('.open-temperature').on('click', function () {
+            clickedLink = this;            
+            popoverHTML = '<div class="popover popover-status">'+                      
+                          '<p class="color-boatwatch">'+LANGUAGE.ASSET_STATUS_MSG15+' - '+Temperature.text()+'</p>'+
+                          /*'<p>'+LANGUAGE.ASSET_STATUS_MSG32+'</p>'+        */               
+                    '</div>';
+            App.popover(popoverHTML, clickedLink);            
+        });
+    }
+            
+    if (EngineHours.text()) {
+        $$(page.container).find('.open-engineHours').on('click', function () {
+            clickedLink = this;            
+            popoverHTML = '<div class="popover popover-status">'+                      
+                          '<p class="color-boatwatch">'+LANGUAGE.ASSET_STATUS_MSG38+' - '+EngineHours.text()+'</p>'+
+                          /*'<p>'+LANGUAGE.ASSET_STATUS_MSG33+'</p>'+         */              
+                    '</div>';
+            App.popover(popoverHTML, clickedLink);            
+        });
+    }
+    if (StoppedDuration.text()) {
+        $$(page.container).find('.open-stoppedDuration').on('click', function () {
+            clickedLink = this;            
+            popoverHTML = '<div class="popover popover-status">'+                      
+                          '<p class="color-boatwatch">'+LANGUAGE.ASSET_STATUS_MSG39+' - '+StoppedDuration.text()+'</p>'+
+                          /*'<p>'+LANGUAGE.ASSET_STATUS_MSG37+'</p>'+   */                    
+                    '</div>';
+            App.popover(popoverHTML, clickedLink);            
+        });
+    } 
+        /*$$(page.container).find('.open-immob').on('click', function () {
+            clickedLink = this;            
+            popoverHTML = '<div class="popover popover-status">'+                      
+                          '<p class="color-dealer">'+LANGUAGE.ASSET_STATUS_MSG25+'</p>'+
+                          '<p>'+LANGUAGE.ASSET_STATUS_MSG42+'</p>'+                       
+                    '</div>';
+            App.popover(popoverHTML, clickedLink);            
+        });  */      
+    
+
+
+    
+    
+    
+    
+     
+  
+
     $$('.buttonAssetEdit').on('click', function(){
          
         var assetList = getAssetList();  

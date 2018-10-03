@@ -34,19 +34,19 @@
 
     	<div class="content-block status_block_top">
     		<div class="row no-gutter">
-			    <div class="col-33">
+			    <div class="col-33 open-gsm">
                     <!-- <img src="resources/images/svg_date.svg" alt=""> -->
                     <i class="f7-icons icon-status-cell position_cell {{GSM}}"></i>
                     <p>{{@global.LANGUAGE.ASSET_STATUS_MSG26}}</p>  
                     <!-- <p class="position_data position_time">{{Time}}</p> -->
                 </div>                
-                <div class="col-33">
+                <div class="col-33 open-gps">
                     <!-- <img src="resources/images/svg_direction.svg" alt=""> -->
                     <i class="f7-icons icon-status-gps position_gps {{GPS}}"></i>
                     <p>{{@global.LANGUAGE.ASSET_STATUS_MSG27}}</p>  
                     <!-- <p class="position_data position_direction">{{Direction}} </p> -->
                 </div> 
-                <div class="col-33">
+                <div class="col-33 open-power">
                     <i class="f7-icons icon-status-power position_power {{Power}}"></i>
                     <!-- <img src="resources/images/svg_speed.svg" alt=""> -->
                     <p>{{@global.LANGUAGE.ASSET_STATUS_MSG28}}</p>  
@@ -58,7 +58,7 @@
         <div class="list-block media-list status_block_list">                
             <ul >   
                 
-                <li class="item-content">
+                <li class="item-content open-time">
                     <div class="item-media state-0"><i class="f7-icons icon-status-date"></i></div>
                     <div class="item-inner"> 
                         <div class="item-title-row">
@@ -67,7 +67,7 @@
                         </div>                        
                     </div>
                 </li> 
-                <li class="item-content">
+                <li class="item-content open-direction">
                     <div class="item-media state-0"><i class="f7-icons icon-status-heading"></i></div>
                     <div class="item-inner"> 
                         <div class="item-title-row">
@@ -76,7 +76,7 @@
                         </div>                        
                     </div>
                 </li>
-                <li class="item-content">
+                <li class="item-content open-speed">
                     <div class="item-media state-0"><i class="f7-icons icon-status-speed"></i></div>
                     <div class="item-inner"> 
                         <div class="item-title-row">
@@ -85,7 +85,7 @@
                         </div>                        
                     </div>
                 </li>
-                <li class="item-content">
+                <li class="item-content open-mileage">
                     <div class="item-media state-0"><i class="f7-icons icon-status-log"></i></div>
                     <div class="item-inner"> 
                         <div class="item-title-row">
@@ -94,14 +94,14 @@
                         </div>                        
                     </div>
                 </li>                  
-                <li class="item-content">
+                <li class="item-content open-address">
                     <div class="item-media state-0"><i class="f7-icons icon-status-address"></i></div>
                     <div class="item-inner">                     
                         <div class="item-text display_address">{{Address}}</div> 
                         <div class="item-subtext color-boatwatch position_coords">{{Coords}}</div>              
                     </div>
                 </li>
-                <li class="item-content position_geolock">
+                <li class="item-content position_geolock open-geolock">
                     <div class="item-media {{js "this.GeolockState == 'Off' ? 'state-1' : 'state-3'"}} "><i class="f7-icons icon-status-geofence"></i></div>
                     <div class="item-inner"> 
                         <div class="item-title-row">
@@ -111,7 +111,7 @@
                     </div>
                 </li>
                 {{#if Voltage}}
-                <li class="item-content">
+                <li class="item-content open-voltage">
                     <div class="item-media state-0"><i class="f7-icons icon-status-voltage"></i></div>
                     <div class="item-inner"> 
                         <div class="item-title-row">
@@ -122,7 +122,7 @@
                 </li>
                 {{/if}}                
                 {{#if Battery}}
-                    <li class="item-content">
+                    <li class="item-content open-battery">
                         <div class="item-media state-0"><i class="f7-icons icon-status-battery"></i></div>
                         <div class="item-inner"> 
                             <div class="item-title-row">
@@ -133,7 +133,7 @@
                     </li>
                 {{/if}}  
                 {{#if Fuel}}
-                    <li class="item-content">
+                    <li class="item-content open-fuel">
                         <div class="item-media state-0"><i class="f7-icons icon-status-fuel"></i></div>
                         <div class="item-inner"> 
                             <div class="item-title-row">
@@ -144,7 +144,7 @@
                     </li>
                 {{/if}}  
                 {{#if EngineHours}}
-                    <li class="item-content">
+                    <li class="item-content open-engineHours">
                         <div class="item-media state-0"><i class="f7-icons icon-status-engine-hours"></i></div>
                         <div class="item-inner"> 
                             <div class="item-title-row">
@@ -155,7 +155,7 @@
                     </li>
                 {{/if}}         
                 {{#if StoppedDuration}}
-                    <li class="item-content">
+                    <li class="item-content  open-stoppedDuration">
                         <div class="item-media state-0"><i class="f7-icons icon-status-stationary-time"></i></div>
                         <div class="item-inner"> 
                             <div class="item-title-row">

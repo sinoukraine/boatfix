@@ -800,10 +800,10 @@ App.onPageInit('asset.status', function (page) {
         
     });
 
-    var geolock = $$(page.container).find('input[name="GeolockState"]');
+    /*var geolock = $$(page.container).find('input[name="GeolockState"]');
     geolock.on('change', function(){        
         changeGeolockState({id: TargetAsset.ASSET_ID, imei: TargetAsset.ASSET_IMEI, state: this.checked});
-    });
+    });*/
 });
 App.onPageInit('asset.edit', function (page) { 
     $$('.upload_photo, .asset_img img').on('click', function (e) {        
@@ -1882,7 +1882,31 @@ App.onPageInit('asset.track', function (page) {
 
     trackTimer = setInterval(function(){
                 updateMarkerPositionTrack(data);
-            }, 10000);    
+            }, 10000);  
+
+    $$('[name = "radio-geolock-set" ]').on('change', function(e) { 
+        console.log($$(this).val());
+    }); 
+
+    /*var geolock = $$(page.container).find('input[name = "Geolock" ]');
+    geolock.on('change', function(){        
+        changeGeolockImmobState({id: TargetAsset.ASSET_ID, imei: TargetAsset.ASSET_IMEI, state: this.value, name: this.attributes.name.value});
+    });*/
+
+    var geolock = $$(page.container).find('input[name="Geolock"]');
+    geolock.on('change', function(){
+        changeGeolockState({id: TargetAsset.ASSET_ID, imei: TargetAsset.ASSET_IMEI, state: strToBool(this.value)});
+
+        if (strToBool(this.value)) {            
+            window.PosMarker[TargetAsset.ASSET_IMEI+'-geofence'] = L.circle([lat, lng], {radius: 100,color: 'red',fillColor: '#f03',fillOpacity: 0.2,});    
+            window.PosMarker[TargetAsset.ASSET_IMEI+'-geofence'].addTo(MapTrack);         
+        }else{
+            if (window.PosMarker[TargetAsset.ASSET_IMEI+'-geofence']) {
+                MapTrack.removeLayer(window.PosMarker[TargetAsset.ASSET_IMEI+'-geofence']);
+            }
+            window.PosMarker[TargetAsset.ASSET_IMEI+'-geofence'] = false;
+        }
+    });
 });
 
 App.onPageBeforeRemove('asset.track', function(page){
@@ -2496,6 +2520,11 @@ function showMap(params){
     MapTrack = Protocol.Helper.createMap({ target: 'map', latLng: latlng, zoom: 15 });   
     window.PosMarker[asset].addTo(MapTrack);
 
+
+    if (window.PosMarker[asset+'-geofence']) {
+        window.PosMarker[asset+'-geofence'].addTo(MapTrack);
+    }
+
     if (!StreetViewService) {
         StreetViewService = new google.maps.StreetViewService();
     }
@@ -2834,6 +2863,8 @@ function setStatusNewState(params){
         POSINFOASSETLIST[params.asset].StatusNew = POSINFOASSETLIST[params.asset].StatusNew & ~Protocol.StatusNewEnum[params.forAlarm] ;
     }
 }
+
+
 
 function loadAlarmPage(){
     var assetList = getAssetList();    
@@ -3233,14 +3264,15 @@ function loadTrackPage(positionMap){
     if (asset && asset.posInfo.positionTime) {         
           
         var speed = 0;
-        var mileage = '-';
+        var mileage = '-';        
         if (typeof asset.Unit !== "undefined" && typeof asset.posInfo.speed !== "undefined") {
             speed = Protocol.Helper.getSpeedValue(asset.Unit, asset.posInfo.speed) + ' ' + Protocol.Helper.getSpeedUnit(asset.Unit);
         }        
         if (typeof asset.Unit !== "undefined" && typeof asset.posInfo.mileage !== "undefined" && asset.posInfo.mileage != '-') {
             mileage = (Protocol.Helper.getMileageValue(asset.Unit, asset.posInfo.mileage) + parseInt(asset.InitMileage) + parseInt(asset._FIELD_FLOAT7)) + '&nbsp;' + Protocol.Helper.getMileageUnit(asset.Unit);
         }
-        
+
+        var geolockState = false;
 
         var markerData = getMarkerDataTable(asset);
         window.PosMarker[TargetAsset.ASSET_IMEI] = L.marker([asset.posInfo.lat, asset.posInfo.lng], {icon: Protocol.MarkerIcon[1]}); 
@@ -3248,10 +3280,24 @@ function loadTrackPage(positionMap){
         window.PosMarker[TargetAsset.ASSET_IMEI].bindPopup(markerData,{"maxWidth":260});
 
         checkMapExisting();
-        var templateUrl = 'resources/templates/asset.track.html';
-        if (positionMap) {
-            templateUrl = 'resources/templates/asset.location.html';
+        var templateUrl = 'resources/templates/asset.location.html';
+        if (!positionMap) {
+            templateUrl = 'resources/templates/asset.track.html';
+
+            var assetFeaturesStatus = Protocol.Helper.getAssetStateInfo(asset); 
+            if (assetFeaturesStatus.geolock) {
+                geolockState = assetFeaturesStatus.geolock.value;   
+
+                if (geolockState) {
+                    window.PosMarker[TargetAsset.ASSET_IMEI+'-geofence'] = L.circle([asset.posInfo.lat, asset.posInfo.lng], {radius: 100,color: 'red',fillColor: '#f03',fillOpacity: 0.2,});                    
+                }else{
+                    window.PosMarker[TargetAsset.ASSET_IMEI+'-geofence'] = false;
+                }                    
+            } 
         }
+
+        
+        
 
         var latlng = {};
         latlng.lat = asset.posInfo.lat;
@@ -3268,6 +3314,7 @@ function loadTrackPage(positionMap){
                 Address: LANGUAGE.COM_MSG08,
                 Lat: latlng.lat,
                 Lng: latlng.lng,
+                Geolock: geolockState,
             }
         });
         
@@ -4292,6 +4339,15 @@ function saveImg(){
     
 }   
 
+function strToBool(s)
+{
+    // will match one and only one of the string 'true','1', or 'on' rerardless
+    // of capitalization and regardless off surrounding white-space.
+    //
+    regex=/^\s*(true|1|on)\s*$/i
+
+    return regex.test(s);
+}
 
 function getImage(source){
     

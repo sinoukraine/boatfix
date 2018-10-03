@@ -117,6 +117,22 @@ html:not(.watch-active-state) .button.btn_login.button-fill:active{
 .mb-0{
 	margin-bottom: 0 !important;
 }
+.pl-0{
+	padding-left: 0 !important;
+}
+.pr-0{
+	padding-right: 0 !important;
+}
+.flex-direction-reverse{
+	flex-direction: row-reverse !important;
+}
+.justify-content-flex-end{
+	justify-content: flex-end !important;
+}
+.width-auto{
+	width: auto !important;
+}
+
 .svg_menu{
 	width: 32px;
 }
@@ -725,9 +741,8 @@ html:not(.watch-active-state) .button.btn_login.button-fill:active{
 }
 	.position_map{
 		position: relative;
-		/* height: calc(100% - 185px);
-		min-height: 200px; */
-		height: 100%;
+		height: calc(100% - 48px);
+		min-height: 200px;		
 	}
 	.position_map_playback{
 		height: calc(100% - 150px);
@@ -811,8 +826,8 @@ html:not(.watch-active-state) .button.btn_login.button-fill:active{
 		/* height: 206px; */
 		/* padding: 16px 16px 4px; */
     	box-sizing: border-box;
-    	text-align: left;
-    	padding-top: 8px;
+    	text-align: center;
+    	/* padding-top: 8px; */
     	
 	}
 	.position_bottom_playback{
@@ -871,8 +886,17 @@ html:not(.watch-active-state) .button.btn_login.button-fill:active{
 		    padding-left: 8px;
 		    font-size: 12px;
 		}
+	.geofenceSetList{
 
+	}
+	.geofenceSetList.list-block .item-media+.item-inner{
+		margin-left: 0;
+	}
+	.geofenceSetList.list-block .item-media{
+		min-width: 32px;
+	}
 
+		
 
 		.leaflet-control-layers:not(.leaflet-control-layers-expanded){
 		border-radius: 50%;

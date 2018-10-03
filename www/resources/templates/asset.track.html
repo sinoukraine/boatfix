@@ -40,6 +40,43 @@
             </div>
             <div class="map" id="map"></div>
     	</div>
+        <div class="position_bottom">
+            <div class="list-block no-hairlines m-0 geofenceSetList">
+                <ul class="row no-gutter">
+                    <li class="col-33 color-green width-auto">
+                        <label class="label-radio item-content ">                                   
+                            <input type="radio" name="Geolock" value="false" {{#unless Geolock}}checked="checked"{{/unless}}>
+                            <div class="item-media">
+                                <i class="icon icon-form-radio"></i>
+                            </div> 
+                            <div class="item-inner">
+                                <div class="item-title">{{@global.LANGUAGE.COM_MSG39}}</div>
+                            </div>                                
+                        </label>
+                    </li>  
+                    <li class="col-33  width-auto">
+                        <div class="item-content pl-0">
+                            <div class="item-inner pr-0">
+                                <div class="item-title">{{@global.LANGUAGE.ASSET_TRACK_MSG16}}</div>            
+                            </div>
+                        </div>
+                    </li>                              
+                    <li class="col-33 color-red width-auto">
+                        <label class="label-radio item-content flex-direction-reverse">
+                            <input type="radio" name="Geolock" value="true"  {{#if Geolock}}checked="checked"{{/if}}>
+                            <div class="item-media">
+                                <i class="icon icon-form-radio"></i>
+                            </div>  
+                            <div class="item-inner justify-content-flex-end">
+                                <div class="item-title">{{@global.LANGUAGE.COM_MSG40}}</div>
+                            </div>   
+                            
+
+                        </label>
+                    </li>       
+
+                </ul>
+        </div>
         <!-- <div class="position_bottom">            
             <div class="row no-gutter">                
                 <div class="col-33">

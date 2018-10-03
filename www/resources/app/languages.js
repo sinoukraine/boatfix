@@ -203,7 +203,8 @@ window.LanguagePackages= {
 		"ASSET_TRACK_MSG12": "Refresh",
 		"ASSET_TRACK_MSG13": "Last Update",	
 		"ASSET_TRACK_MSG14": "sec",	
-		"ASSET_TRACK_MSG15": "GPRS",	
+		"ASSET_TRACK_MSG15": "GPRS",
+		"ASSET_TRACK_MSG16": "Geo Fence Set",	
 
 		"ASSET_EDIT_MSG00": "Tag",
 		"ASSET_EDIT_MSG01": "Name",

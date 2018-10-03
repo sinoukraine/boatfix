@@ -178,7 +178,8 @@ function onAppPause(){
         $hub.stop();
     }*/
 } 
-function onAppResume(){    
+function onAppResume(){  
+    console.log('onAppResume');  
     if (localStorage.ACCOUNT && localStorage.PASSWORD) {
         getNewNotifications(); 
         getNewData();
@@ -257,6 +258,7 @@ var geofenceMarkerGroup = false;
 var API_DOMIAN1 = "http://api.m2mglobaltech.com/QuikTrak/V1/";
 var API_DOMIAN2 = "";
 var API_DOMIAN3 = "http://api.m2mglobaltech.com/QuikProtect/V1/";
+var API_DOMIAN4 = "http://api.m2mglobaltech.com/Quikloc8/V1/";
 var API_URL = {};
 API_URL.URL_GET_LOGIN = API_DOMIAN1 + "User/Auth?username={0}&password={1}&appKey={2}&mobileToken={3}&deviceToken={4}&deviceType={5}";
 //API_URL.URL_GET_LOGOUT = API_DOMIAN1 + "User/Logoff2?MajorToken={0}&MinorToken={1}&username={2}&mobileToken={3}";
@@ -269,6 +271,8 @@ API_URL.URL_SET_ALARM = API_DOMIAN1 + "Device/AlarmOptions2?MinorToken={0}&imei=
 
 API_URL.URL_SET_GEOLOCK_ON = API_DOMIAN1 + "Device/Lock?MajorToken={0}&MinorToken={1}&code={2}&radius=100";
 API_URL.URL_SET_GEOLOCK_OFF = API_DOMIAN1 + "Device/Unlock?MajorToken={0}&MinorToken={1}&code={2}";
+API_URL.URL_SET_IMMOBILISATION = API_DOMIAN4 + "asset/Relay?MajorToken={0}&MinorToken={1}&code={2}&state={3}";
+API_URL.URL_SET_GEOLOCK = API_DOMIAN4 + "asset/GeoLock?MajorToken={0}&MinorToken={1}&code={2}&state={3}";
 
 API_URL.URL_GET_POSITION = API_DOMIAN1 + "Device/GetPosInfo?MinorToken={0}&Code={1}";
 API_URL.URL_GET_POSITION_ARR = API_DOMIAN1 + "Device/GetHisPosArray?MinorToken={0}&Code={1}&From={2}&To={3}";
@@ -539,6 +543,13 @@ $$('#menu li').on('click', function () {
             break;
         
     }
+});
+
+$$('body').on('click', '.navbar_title, .navbar_title_index', function(){
+    var json = '{"title":"GEOLOCK WARNING","type":1024,"imei":"0000001700091735","name":"0000001700091735","lat":43.895091666666666,"lng":125.29207,"speed":0,"direct":0,"time":"2018-08-23 16:56:36"}';
+    showMsgNotification([json]);
+    //getNewData();
+    //console.log($$('.status_page').length);
 });
 
 $$(document).on('click', 'a.tab-link', function(e){
@@ -2026,13 +2037,22 @@ App.onPageInit('asset.track', function (page) {
             }, 10000);  
 
 
-
-    /*var geolock = $$(page.container).find('input[name = "Geolock" ]');
-    geolock.on('change', function(){        
-        changeGeolockImmobState({id: TargetAsset.ASSET_ID, imei: TargetAsset.ASSET_IMEI, state: this.value, name: this.attributes.name.value});
-    });*/
-
     var geolock = $$(page.container).find('input[name="Geolock"]');
+
+    geolock.on('change', function(){        
+        changeGeolockImmobState({id: TargetAsset.ASSET_ID, imei: TargetAsset.ASSET_IMEI, state: strToBool(this.value), name: this.attributes.name.value});
+
+        if (strToBool(this.value)) {            
+            window.PosMarker[TargetAsset.ASSET_IMEI+'-geofence'] = L.circle([lat, lng], {radius: 100,color: 'red',fillColor: '#f03',fillOpacity: 0.2,});    
+            window.PosMarker[TargetAsset.ASSET_IMEI+'-geofence'].addTo(MapTrack);         
+        }else{
+            if (window.PosMarker[TargetAsset.ASSET_IMEI+'-geofence']) {
+                MapTrack.removeLayer(window.PosMarker[TargetAsset.ASSET_IMEI+'-geofence']);
+            }
+            window.PosMarker[TargetAsset.ASSET_IMEI+'-geofence'] = false;
+        }
+    });
+    /*
     geolock.on('change', function(){
         changeGeolockState({id: TargetAsset.ASSET_ID, imei: TargetAsset.ASSET_IMEI, state: strToBool(this.value)});
 
@@ -2045,7 +2065,7 @@ App.onPageInit('asset.track', function (page) {
             }
             window.PosMarker[TargetAsset.ASSET_IMEI+'-geofence'] = false;
         }
-    });
+    });*/
 });
 
 App.onPageBeforeRemove('asset.track', function(page){
@@ -2996,6 +3016,55 @@ function changeGeolockState(params){
     }
 }
 
+function changeGeolockImmobState(params){
+    if (params && params.id) {        
+        var userInfo = getUserinfo();   
+        var url = API_URL.URL_SET_GEOLOCK;
+        if (params.name == 'Immobilise') {
+            url = API_URL.URL_SET_IMMOBILISATION;               
+        }
+
+        var linkState = 'off';
+
+        url = url.format(userInfo.MajorToken,
+            userInfo.MinorToken,
+            params.id,
+            params.state ? 'on' : 'off'
+        ); 
+        console.log(url);
+        App.showPreloader();
+        JSON1.request(url, function(result){ 
+                console.log(result);                  
+                if (result.MajorCode == '000') {
+                    console.log(params);
+                    setStatusNewState({
+                        asset: params.imei,                        
+                        forAlarm: params.name,
+                        state: params.state
+                    });  
+                    //changeIconColor(params);
+                    //checkBalance();                     
+                                   
+                }else if(result.MajorCode == '200' && result.MinorCode == '1003'){ 
+                    showNoCreditMessage();
+                    params.state = !params.state;
+                    changeSwitcherState(params);
+                }else if(result.MajorCode == '100' && result.MinorCode == '1003'){                  
+                    showCustomMessage({title: LANGUAGE.PROMPT_MSG050, text: LANGUAGE.PROMPT_MSG051}); 
+                    params.state = !params.state;
+                    changeSwitcherState(params);               
+                }else{
+                    App.alert(LANGUAGE.COM_MSG36);
+                    params.state = !params.state;
+                    changeSwitcherState(params);
+                }
+                App.hidePreloader();
+            },
+            function(){ App.hidePreloader(); App.alert(LANGUAGE.COM_MSG02); }
+        );                 
+    }
+}
+
 function setStatusNewState(params){   
     if (params.state === true) {
         POSINFOASSETLIST[params.asset].StatusNew = POSINFOASSETLIST[params.asset].StatusNew | Protocol.StatusNewEnum[params.forAlarm] ;
@@ -3004,8 +3073,34 @@ function setStatusNewState(params){
     }
 }
 
-
-
+function changeSwitcherState(params){   
+    if (params.name) {
+        var input = $$('.track_page [name='+params.name+'][value='+params.state+']');       
+        if (input) {
+            input.prop('checked', true);   
+            if (window.PosMarker[TargetAsset.ASSET_IMEI+'-geofence']) {
+                MapTrack.removeLayer(window.PosMarker[TargetAsset.ASSET_IMEI+'-geofence']);
+            }
+            window.PosMarker[TargetAsset.ASSET_IMEI+'-geofence'] = false;               
+        }
+    }
+}
+function changeGeolockStateOnStatusPage(params){
+    if (params.name) {
+        var container = $$('.status_page .position_geolock');       
+        if (container) {
+            var icon = container.find('.item-media').removeClass('state-1 state-3');
+            var text = container.find('.item-after').removeClass('state-1 state-3');
+            if (params.state) {
+                $$(icon).addClass('state-3');
+                $$(text).addClass('state-3').html('On');
+            } else{
+                $$(icon).addClass('state-1');
+                $$(text).addClass('state-1').html('Off');
+            }
+        }
+    }
+}
 function loadAlarmPage(){
     var assetList = getAssetList();    
     var assetAlarmVal = assetList[TargetAsset.ASSET_IMEI].AlarmOptions;
@@ -3348,6 +3443,7 @@ function loadTrackPage(params){
         coords: '',
         customAddress: '',
         status: '',
+        geolockState: '',
     };
 //{"title":"Acc off","type":65536,"imei":"0352544073967920","name":"Landcruiser Perth","lat":-32.032898333333335,"lng":115.86817722222216,"speed":0,"direct":0,"time":"2018-04-13 10:16:51"}
     if ((params && parseFloat(params.lat) !== 0 && parseFloat(params.lng) !== 0) || (parseFloat(asset.posInfo.lat) !== 0 && parseFloat(asset.posInfo.lng) !== 0) ){     
@@ -3365,7 +3461,7 @@ function loadTrackPage(params){
             
         }else{  
             var assetFeaturesStatus = Protocol.Helper.getAssetStateInfo(asset); 
-            
+
             if (typeof asset.Unit !== "undefined" && typeof asset.posInfo.speed !== "undefined") {
                 details.speed = Protocol.Helper.getSpeedValue(asset.Unit, asset.posInfo.speed) + ' ' + Protocol.Helper.getSpeedUnit(asset.Unit);
             }        
@@ -3381,9 +3477,9 @@ function loadTrackPage(params){
 
             
             if (assetFeaturesStatus.geolock) {
-                geolockState = assetFeaturesStatus.geolock.value;   
+                details.geolockState = assetFeaturesStatus.geolock.value;   
 
-                if (geolockState) {
+                if (details.geolockState) {
                     window.PosMarker[TargetAsset.ASSET_IMEI+'-geofence'] = L.circle([asset.posInfo.lat, asset.posInfo.lng], {radius: 100,color: 'red',fillColor: '#f03',fillOpacity: 0.2,});                    
                 }else{
                     window.PosMarker[TargetAsset.ASSET_IMEI+'-geofence'] = false;
@@ -3414,6 +3510,7 @@ function loadTrackPage(params){
                 Lat: details.latlng.lat,
                 Lng: details.latlng.lng,
                 Coords: details.coords,
+                Geolock: details.geolockState
             }
         });        
 
@@ -3550,28 +3647,32 @@ function updateMarkerPositionTrack(data){
         if (asset) {
             window.PosMarker[TargetAsset.ASSET_IMEI].setLatLng([asset.posInfo.lat, asset.posInfo.lng]);
 
-            data.posTime.html(asset.posInfo.positionTime.format(window.COM_TIMEFORMAT));           
-            data.posMileage.html((Protocol.Helper.getMileageValue(asset.Unit, asset.posInfo.mileage) + parseInt(asset.InitMileage) + parseInt(asset._FIELD_FLOAT7)) + '&nbsp;' + Protocol.Helper.getMileageUnit(asset.Unit)); 
-            data.posSpeed.html(Protocol.Helper.getSpeedValue(asset.Unit, asset.posInfo.speed) + ' ' + Protocol.Helper.getSpeedUnit(asset.Unit));
-            MapTrack.setView([asset.posInfo.lat, asset.posInfo.lng]);
-
             var latlng = {};
             latlng.lat = asset.posInfo.lat;
             latlng.lng = asset.posInfo.lng;
+
+            if (data && data.posTime) {
+                data.posTime.html(asset.posInfo.positionTime.format(window.COM_TIMEFORMAT));  
+            }
+            
+            if (data && data.posMileage) {
+                data.posMileage.html((Protocol.Helper.getMileageValue(asset.Unit, asset.posInfo.mileage) + parseInt(asset.InitMileage) + parseInt(asset._FIELD_FLOAT7)) + '&nbsp;' + Protocol.Helper.getMileageUnit(asset.Unit)); 
+            }
+            if (data && data.posSpeed) {
+                data.posSpeed.html(Protocol.Helper.getSpeedValue(asset.Unit, asset.posInfo.speed) + ' ' + Protocol.Helper.getSpeedUnit(asset.Unit));
+            } 
+            if (data.posLatlng) {              
+                data.posLatlng.html('GPS: ' + Protocol.Helper.convertDMS(latlng.lat, latlng.lng));             
+            }
+            if (data.panoButton) {
+                data.panoButton.data('lat',latlng.lat);
+                data.panoButton.data('lng',latlng.lng);
+            }            
 
            /* if (data.routeButton) {
                 data.routeButton.attr('href',API_ROUTE+latlng.lat+','+latlng.lng);
             }*/
 
-            if (data.panoButton) {
-                data.panoButton.data('lat',latlng.lat);
-                data.panoButton.data('lng',latlng.lng);
-            }
-
-            if (data.posLatlng) {
-                //data.posLatlng.html(latlng.lat + ', ' + latlng.lng);
-                data.posLatlng.html('GPS: ' + Protocol.Helper.convertDMS(latlng.lat, latlng.lng));             
-            }
            
             var newMarkerData = getMarkerDataTable(asset);            
             window.PosMarker[TargetAsset.ASSET_IMEI].setPopupContent(newMarkerData);
@@ -3599,9 +3700,6 @@ function updateMarkerPositionTrack(data){
                 
             });
 
-            /*Protocol.Helper.getAddressByGeocoder(latlng,function(address){
-                data.posAddress.html(address);
-            });*/
         }
             
 }
@@ -3973,6 +4071,7 @@ function setAssetList(list){
             AlarmOptions: list[i][index++],
             _FIELD_FLOAT8: list[i][index++],
             StatusNew: list[i][index++],
+            _FIELD_INT2: list[i][index++],
         };        
     }
     setAssetListPosInfo(ary);    
@@ -4005,6 +4104,75 @@ function updateAssetList(asset){
     }
     
     localStorage.setItem("COM.QUIKTRAK.LIVE.ASSETLIST", JSON.stringify(list));
+}
+
+function updateAssetList2(list){
+    var ary = {};    
+    for(var i = 0; i < list.length; i++) { 
+        var index = 0;    
+        ary[list[i][1]] = {                      
+            Id: list[i][index++],
+            IMEI: list[i][index++],
+            Name: list[i][index++],
+            TagName: list[i][index++],
+            Icon: list[i][index++],
+            Unit: list[i][index++], 
+            InitMileage: list[i][index++],
+            InitAcconHours: list[i][index++],
+            State: list[i][index++],
+            ActivateDate: list[i][index++],
+            PRDTName: list[i][index++],
+            PRDTFeatures: list[i][index++],
+            PRDTAlerts: list[i][index++],
+            Describe1: list[i][index++],
+            Describe2: list[i][index++],
+            Describe3: list[i][index++],
+            Describe4: list[i][index++],
+            Describe5: list[i][index++],
+            _FIELD_FLOAT1: list[i][index++],
+            _FIELD_FLOAT2: list[i][index++],
+            _FIELD_FLOAT7: list[i][index++],
+            Describe7: list[i][index++],   
+            AlarmOptions: list[i][index++],        
+            _FIELD_FLOAT8: list[i][index++],
+            StatusNew: list[i][index++],
+            _FIELD_INT2: list[i][index++],
+        }; 
+        /*$.each(ary[list[i][1]], function(key,value){
+            if (POSINFOASSETLIST[list[i][1]]) {
+                POSINFOASSETLIST[list[i][1]][key] = value;
+            }            
+        });   */
+        if (POSINFOASSETLIST[list[i][1]]) {  
+            POSINFOASSETLIST[list[i][1]].StatusNew =  ary[list[i][1]].StatusNew;
+        }
+    }
+    
+    if ($$('.track_page').length > 0 && TargetAsset.ASSET_IMEI && POSINFOASSETLIST[TargetAsset.ASSET_IMEI]) {            
+        var assetFeaturesStatus = Protocol.Helper.getAssetStateInfo(POSINFOASSETLIST[TargetAsset.ASSET_IMEI]);
+        if (assetFeaturesStatus && assetFeaturesStatus.stats) {
+            var params = {
+                id: '',
+                imei: TargetAsset.ASSET_IMEI,
+                name: 'Geolock',
+                state: assetFeaturesStatus.geolock.value,
+            };  
+            changeSwitcherState(params);            
+        }           
+    }else if ($$('.status_page').length > 0 && TargetAsset.ASSET_IMEI && POSINFOASSETLIST[TargetAsset.ASSET_IMEI]){       
+        var assetFeaturesStatus = Protocol.Helper.getAssetStateInfo(POSINFOASSETLIST[TargetAsset.ASSET_IMEI]);
+        if (assetFeaturesStatus && assetFeaturesStatus.stats) {
+            var params = {
+                id: '',
+                imei: TargetAsset.ASSET_IMEI,
+                name: 'Geolock',
+                state: assetFeaturesStatus.geolock.value,
+            };  
+            changeGeolockStateOnStatusPage(params);            
+        }    
+    }
+
+    localStorage.setItem("COM.QUIKTRAK.LIVE.ASSETLIST", JSON.stringify(ary));
 }
 
 function setAssetListPosInfo(listObj){    
@@ -4090,6 +4258,44 @@ function updateAlarmOptVal(alarmOptions) {
     }
     
     localStorage.setItem("COM.QUIKTRAK.LIVE.ASSETLIST", JSON.stringify(assetList));
+}
+
+function getNewData(){
+    //alert('here');
+    getPlusInfo();
+    //hideKeyboard();    
+    
+    var mobileToken = !localStorage.PUSH_MOBILE_TOKEN? '111' : localStorage.PUSH_MOBILE_TOKEN;
+    var appKey = !localStorage.PUSH_APP_KEY? '111' : localStorage.PUSH_APP_KEY;
+    var deviceToken = !localStorage.PUSH_DEVICE_TOKEN? '111' : localStorage.PUSH_DEVICE_TOKEN;
+    var deviceType = !localStorage.DEVICE_TYPE? 'android' : localStorage.DEVICE_TYPE;
+   
+   // alert('logged in');
+    
+    var urlLogin = API_URL.URL_GET_LOGIN.format(localStorage.ACCOUNT, 
+                                     encodeURIComponent(localStorage.PASSWORD), 
+                                     appKey, 
+                                     mobileToken, 
+                                     encodeURIComponent(deviceToken), 
+                                     deviceType);  
+    //alert(urlLogin); 
+    //console.log(urlLogin);                             
+    JSON1.request(urlLogin, function(result){
+           console.log(result);
+            if(result.MajorCode == '000') {                
+                setUserinfo(result.Data);
+                //setAssetList(result.Data.Devices); 
+                //updateUserCredits(result.Data.User.Credits);
+                if (result.Data.Devices) {
+                    updateAssetList2(result.Data.Devices);
+                }
+                
+            }
+        },
+        function(){  }
+    ); 
+   
+
 }
 
 function getNewNotifications(params){         
@@ -4380,7 +4586,7 @@ function showMsgNotification(arrMsgJ){
             }
                 
 
-            /*if (msg.imei && msg.type && parseInt(msg.type) == 1024 ) {  //geolock                
+            if (msg.imei && msg.type && parseInt(msg.type) == 1024 ) {  //geolock                
                 var params = {
                     id: '',
                     imei: msg.imei,
@@ -4392,9 +4598,9 @@ function showMsgNotification(arrMsgJ){
                     forAlarm: params.name,
                     state: params.state,                    
                 });  
-                changeIconColor(params);
-                changeSwitcherState(params);
-            }      */     
+                //changeIconColor(params);
+                //changeSwitcherState(params);
+            }           
         }          
     }  
 }

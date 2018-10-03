@@ -210,7 +210,7 @@ window.LanguagePackages= {
 		"ASSET_TRACK_MSG10": "Fuel",
 		"ASSET_TRACK_MSG11": "Address",
 		"ASSET_TRACK_MSG12": "Refresh",
-		"ASSET_TRACK_MSG13": "Last Update",	
+		"ASSET_TRACK_MSG13": "Position time",	
 		"ASSET_TRACK_MSG14": "sec",	
 		"ASSET_TRACK_MSG15": "GPRS",
 		"ASSET_TRACK_MSG16": "Geo Fence Set",	

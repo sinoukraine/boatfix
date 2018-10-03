@@ -78,6 +78,7 @@ window.LanguagePackages= {
 		"PROMPT_MSG050": "Access restricted",
 		"PROMPT_MSG051": "Demo accounts has restricted access",
 		"PROMPT_MSG052": "App can't get phone details for push notifications. Please, logout and login again.",
+		"PROMPT_MSG053": 'This option will be available soon',
 
 
 		"LOGIN_MSG01": "The login(email) or password you entered is incorrect.",
@@ -138,6 +139,8 @@ window.LanguagePackages= {
 		"ALARM_MSG22": "Negative Input",
 		"ALARM_MSG23": "Speed Alert",
 		"ALARM_MSG24": "Turn on/Turn off all",
+		"ALARM_MSG25": "Outboard Engine Removal",
+
 		"ASSET_STATUS_MSG00": "Date, time",
 		"ASSET_STATUS_MSG01": "Heading",
 		"ASSET_STATUS_MSG02": "Speed",

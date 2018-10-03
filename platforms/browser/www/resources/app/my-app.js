@@ -266,6 +266,7 @@ API_URL.URL_EDIT_DEVICE = API_DOMIAN1 + "Device/Edit?MinorToken={0}&Code={1}&nam
 //API_URL.URL_SET_ALARM = API_DOMIAN3 + "Client/AlarmOptions?MajorToken={0}&MinorToken={1}&imei={2}&bilge={3}&power={4}&ignition={5}&geolock={6}&ignitionOff={7}";
 API_URL.URL_SET_ALARM = API_DOMIAN1 + "Device/AlarmOptions2?MinorToken={0}&imei={1}&options={2}";
 
+
 API_URL.URL_SET_GEOLOCK_ON = API_DOMIAN1 + "Device/Lock?MajorToken={0}&MinorToken={1}&code={2}&radius=100";
 API_URL.URL_SET_GEOLOCK_OFF = API_DOMIAN1 + "Device/Unlock?MajorToken={0}&MinorToken={1}&code={2}";
 
@@ -462,6 +463,12 @@ $$('body').on('click', '.toggle-password', function(){
     $(this).toggleClass('color-gray');  
 });
 
+$$('body').on('click', '#account, #password', function(e){  
+    setTimeout(function(){      
+        $('.login-screen-content').scrollTop(200);
+    },1000);    
+});
+
 /*$$('.button_search').on('click', function(){        
     $('.searchbar').slideDown(400, function(){
         $$('.searchbar input').focus();
@@ -516,9 +523,15 @@ $$('#menu li').on('click', function () {
                 loadAlarmsAssetsPage();      
             }
             break; 
-        case 'menuSupport':                    
+        /*case 'menuSupport':                    
             loadPageSupport(); 
-            break;         
+            break;  */   
+        case 'menuUserManual':
+            showCustomMessage({
+                title: LANGUAGE.MENU_MSG12,
+                text: LANGUAGE.PROMPT_MSG053,
+            });
+            break;    
         case 'menuLogout':
             App.confirm(LANGUAGE.PROMPT_MSG012, LANGUAGE.MENU_MSG04, function () {        
                 logout();
@@ -1085,32 +1098,46 @@ App.onPageInit('alarms.assets', function (page) {
 });
 
 App.onPageInit('alarms.select', function (page) {
-
-    var alarm = $$(page.container).find('input[name = "checkbox-alarm"]');    
-
-    var alarmFields = ['bilge','power','accOn','geolock','geofenceIn','geofenceOut','accOff'];  
    
-
-    var allCheckboxesLabel = $$(page.container).find('label.item-content');
-    var allCheckboxes = allCheckboxesLabel.find('input');
-    var assets = $$(page.container).find('input[name="Assets"]').val();
-    
-
-    alarm.on('change', function(e) { 
-        if( $$(this).prop('checked') ){
-            allCheckboxes.prop('checked', true);
-        }else{
-            allCheckboxes.prop('checked', false);
-        }
-    });
-
-    allCheckboxes.on('change', function(e) { 
-        if( $$(this).prop('checked') ){
-            alarm.prop('checked', true);
-        }
-    });    
-    
+        
     $$('.saveAlarm').on('click', function(e){        
+        var alarmOptions = {
+            IMEI: $$(page.container).find('input[name="Assets"]').val(),
+            options: 0,            
+        };
+                
+        var fields = $$(page.container).find('input[type = "radio"]:checked');         
+        $.each(fields, function( index, value ) {
+            alarmOptions.options = alarmOptions.options + parseInt(this.value, 10);            
+        });   
+        
+        var userInfo = getUserinfo(); 
+        var url = API_URL.URL_SET_ALARM.format(userInfo.MinorToken,
+                alarmOptions.IMEI,
+                alarmOptions.options                                
+            );                    
+        console.log(url);
+        App.showPreloader();
+        JSON1.request(url, function(result){ 
+                console.log(result);                  
+                if (result.MajorCode == '000') {                    
+                    //setAlarmList(alarmOptions);
+                    updateAlarmOptVal(alarmOptions);
+                    mainView.router.back({
+                        pageName: 'index', 
+                        force: true
+                    });
+                }else{
+                    App.alert('Something wrong');
+                }
+                App.hidePreloader();
+            },
+            function(){ App.hidePreloader(); App.alert(LANGUAGE.COM_MSG16); }
+        ); 
+        
+    });
+    
+    /*$$('.saveAlarm').on('click', function(e){        
         var alarmOptions = {
             IMEI: assets,
             options: 0,            
@@ -1153,7 +1180,9 @@ App.onPageInit('alarms.select', function (page) {
             function(){ App.hidePreloader(); App.alert(LANGUAGE.COM_MSG16); }
         ); 
         
-    });
+    });*/
+
+
 
 });
 
@@ -1487,48 +1516,17 @@ App.onPageInit('resetPwd', function (page) {
     });
 });
 
-App.onPageInit('asset.alarm', function (page) {
-    //var alarm = $$(page.container).find('input[name = "checkbox-alarm"]');    
-
-    var alarmFields = ['bilge','power','accOn','geolock','accOff'];  
-
-    //var 
-   
-
-    /*var allCheckboxesLabel = $$(page.container).find('label.item-content');
-    var allCheckboxes = allCheckboxesLabel.find('input');*/
-
-    
-
-    /*alarm.on('change', function(e) { 
-        if( $$(this).prop('checked') ){
-            allCheckboxes.prop('checked', true);
-        }else{
-            allCheckboxes.prop('checked', false);
-        }
-    });
-
-    allCheckboxes.on('change', function(e) { 
-        if( $$(this).prop('checked') ){
-            alarm.prop('checked', true);
-        }
-    });    */
+App.onPageInit('asset.alarm', function (page) {    
     
     $$('.saveAlarm').on('click', function(e){        
         var alarmOptions = {
             IMEI: TargetAsset.ASSET_IMEI,
             options: 0,            
         };
-        /*if (alarm.is(":checked")) {
-            alarmOptions.alarm = true;
-        }*/
-            
-        $.each(alarmFields, function( index, value ) {
-            var field = $$(page.container).find('input[name = "radio-'+value+'"]');
-            console.log(field);
-            if (!field.is(":checked")) {                
-                alarmOptions.options = alarmOptions.options + parseInt(field.val(), 10);
-            }
+                
+        var fields = $$(page.container).find('input[type = "radio"]:checked');         
+        $.each(fields, function( index, value ) {
+            alarmOptions.options = alarmOptions.options + parseInt(this.value, 10);            
         });   
         
         var userInfo = getUserinfo(); 
@@ -1537,7 +1535,7 @@ App.onPageInit('asset.alarm', function (page) {
                 alarmOptions.options                                
             );                    
         console.log(url);
-        /*App.showPreloader();
+        App.showPreloader();
         JSON1.request(url, function(result){ 
                 console.log(result);                  
                 if (result.MajorCode == '000') {                    
@@ -1550,7 +1548,7 @@ App.onPageInit('asset.alarm', function (page) {
                 App.hidePreloader();
             },
             function(){ App.hidePreloader(); App.alert(LANGUAGE.COM_MSG16); }
-        ); */
+        ); 
         
     });
         
@@ -2875,10 +2873,19 @@ function loadAlarmPage(){
             state: true,
             val: 131072,
         },
+        input1Alarm: {
+            state: true,
+            val: 1,
+        },
+        lowBattery: {
+            state: true,
+            val: 512,
+        },
         /*geofenceIn: {
             state: true,
             val: 8,
         },*/
+        
         geolock:{
             state: true,
             //val: 1024,
@@ -2906,6 +2913,7 @@ function loadAlarmPage(){
         },
     };
     
+    
 
     if (assetAlarmVal) {
         $.each( alarms, function ( key, value ) {            
@@ -2913,9 +2921,9 @@ function loadAlarmPage(){
                 alarms[key].state = false;
             }            
         });
-        if (assetAlarmVal == 230428) {
+       /* if (assetAlarmVal == 230428) {
             alarms.alarm.state = false;
-        }
+        }*/
         
     }
 
@@ -2925,8 +2933,10 @@ function loadAlarmPage(){
         url:'resources/templates/asset.alarm.html',
         context:{
             Name: POSINFOASSETLIST[TargetAsset.ASSET_IMEI].Name,            
-            alarm: alarms.alarm.state,
+            //alarm: alarms.alarm.state,
             bilge: alarms.bilge.state,
+            input1Alarm: alarms.input1Alarm.state,
+            lowBattery: alarms.lowBattery.state,
             //geofenceIn: alarms.geofenceIn.state,
             geolock: alarms.geolock.state,            
             accOff: alarms.accOff.state,
@@ -4269,6 +4279,26 @@ function formatArrAssetList(){
         });     
     }
     return newAssetlist;   
+}
+
+function showCustomMessage(params){
+    var modalTex = '';
+    if (params.title) {
+        modalTex += '<div class="color-red custom-modal-title">'+ params.title +'</div>';
+    }
+    if (params.text) {
+        modalTex += '<div class="custom-modal-text">'+ params.text +'</div>';  
+    }    
+                                             
+    App.modal({
+           title: '<div class="custom-modal-logo-wrapper"><img class="custom-modal-logo" src="resources/images/logo.png" alt=""/></div>',
+            text: modalTex,                                
+         buttons: [
+            {
+                text: LANGUAGE.COM_MSG38
+            }            
+        ]
+    });    
 }
 
 

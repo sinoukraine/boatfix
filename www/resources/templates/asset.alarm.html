@@ -43,7 +43,7 @@
 								<ul class="row no-gutter">							    
 								    <li class="col-50 color-green">
 									    <label class="label-radio item-content ">							        
-									        <input type="radio" name="radio-bilge" value="0" {{#unless bilge}} checked="checked"{{/unless}}>
+									        <input type="radio" name="radio-bilge" value="131072" {{#unless bilge}} checked="checked"{{/unless}}>
 									        <div class="item-media">
 									          	<i class="icon icon-form-radio"></i>
 									        </div>							       
@@ -51,7 +51,61 @@
 								    </li>							   
 								    <li class="col-50 color-red">
 								      	<label class="label-radio item-content ">
-									        <input type="radio" name="radio-bilge" value="131072"  {{#if bilge}}checked="checked"{{/if}}>
+									        <input type="radio" name="radio-bilge" value="0"  {{#if bilge}}checked="checked"{{/if}}>
+									        <div class="item-media">
+									          	<i class="icon icon-form-radio"></i>
+									        </div>							       
+								      	</label>
+								    </li>							   
+								</ul>
+							</div>
+			            </div>
+			        </div>
+		        </li>
+		        <li class="item-content">	          
+			        <div class="item-inner">
+			            <div class="item-title">{{@global.LANGUAGE.ALARM_MSG25}}</div>
+			            <div class="item-after">
+			            	<div class="list-block list-block-radio">
+								<ul class="row no-gutter">							    
+								    <li class="col-50 color-green">
+									    <label class="label-radio item-content ">							        
+									        <input type="radio" name="radio-input1Alarm" value="1" {{#unless input1Alarm}} checked="checked"{{/unless}}>
+									        <div class="item-media">
+									          	<i class="icon icon-form-radio"></i>
+									        </div>							       
+									    </label>
+								    </li>							   
+								    <li class="col-50 color-red">
+								      	<label class="label-radio item-content ">
+									        <input type="radio" name="radio-input1Alarm" value="0"  {{#if input1Alarm}}checked="checked"{{/if}}>
+									        <div class="item-media">
+									          	<i class="icon icon-form-radio"></i>
+									        </div>							       
+								      	</label>
+								    </li>							   
+								</ul>
+							</div>
+			            </div>
+			        </div>
+		        </li>
+		        <li class="item-content">	          
+			        <div class="item-inner">
+			            <div class="item-title">{{@global.LANGUAGE.ALARM_MSG17}}</div>
+			            <div class="item-after">
+			            	<div class="list-block list-block-radio">
+								<ul class="row no-gutter">							    
+								    <li class="col-50 color-green">
+									    <label class="label-radio item-content ">							        
+									        <input type="radio" name="radio-lowBattery" value="512" {{#unless lowBattery}} checked="checked"{{/unless}}>
+									        <div class="item-media">
+									          	<i class="icon icon-form-radio"></i>
+									        </div>							       
+									    </label>
+								    </li>							   
+								    <li class="col-50 color-red">
+								      	<label class="label-radio item-content ">
+									        <input type="radio" name="radio-lowBattery" value="0"  {{#if lowBattery}}checked="checked"{{/if}}>
 									        <div class="item-media">
 									          	<i class="icon icon-form-radio"></i>
 									        </div>							       
@@ -70,7 +124,7 @@
 								<ul class="row no-gutter">							    
 								    <li class="col-50 color-green">
 									    <label class="label-radio item-content ">							        
-									        <input type="radio" name="radio-geolock" value="0" {{#unless geolock}} checked="checked"{{/unless}}>
+									        <input type="radio" name="radio-geolock" value="1048" {{#unless geolock}} checked="checked"{{/unless}}>
 									        <div class="item-media">
 									          	<i class="icon icon-form-radio"></i>
 									        </div>							       
@@ -78,7 +132,7 @@
 								    </li>							   
 								    <li class="col-50 color-red">
 								      	<label class="label-radio item-content ">
-									        <input type="radio" name="radio-geolock" value="1048"  {{#if geolock}}checked="checked"{{/if}}>
+									        <input type="radio" name="radio-geolock" value="0"  {{#if geolock}}checked="checked"{{/if}}>
 									        <div class="item-media">
 									          	<i class="icon icon-form-radio"></i>
 									        </div>							       
@@ -97,7 +151,7 @@
 								<ul class="row no-gutter">							    
 								    <li class="col-50 color-green">
 									    <label class="label-radio item-content ">							        
-									        <input type="radio" name="radio-accOff" value="0" {{#unless accOff}} checked="checked"{{/unless}}>
+									        <input type="radio" name="radio-accOff" value="65536" {{#unless accOff}} checked="checked"{{/unless}}>
 									        <div class="item-media">
 									          	<i class="icon icon-form-radio"></i>
 									        </div>							       
@@ -105,7 +159,7 @@
 								    </li>							   
 								    <li class="col-50 color-red">
 								      	<label class="label-radio item-content ">
-									        <input type="radio" name="radio-accOff" value="65536"  {{#if accOff}}checked="checked"{{/if}}>
+									        <input type="radio" name="radio-accOff" value="0"  {{#if accOff}}checked="checked"{{/if}}>
 									        <div class="item-media">
 									          	<i class="icon icon-form-radio"></i>
 									        </div>							       
@@ -124,7 +178,7 @@
 								<ul class="row no-gutter">							    
 								    <li class="col-50 color-green">
 									    <label class="label-radio item-content ">							        
-									        <input type="radio" name="radio-accOn" value="0" {{#unless accOn}} checked="checked"{{/unless}}>
+									        <input type="radio" name="radio-accOn" value="32768" {{#unless accOn}} checked="checked"{{/unless}}>
 									        <div class="item-media">
 									          	<i class="icon icon-form-radio"></i>
 									        </div>							       
@@ -132,7 +186,7 @@
 								    </li>							   
 								    <li class="col-50 color-red">
 								      	<label class="label-radio item-content ">
-									        <input type="radio" name="radio-accOn" value="32768"  {{#if accOn}}checked="checked"{{/if}}>
+									        <input type="radio" name="radio-accOn" value="0"  {{#if accOn}}checked="checked"{{/if}}>
 									        <div class="item-media">
 									          	<i class="icon icon-form-radio"></i>
 									        </div>							       
@@ -151,7 +205,7 @@
 								<ul class="row no-gutter">							    
 								    <li class="col-50 color-green">
 									    <label class="label-radio item-content ">							        
-									        <input type="radio" name="radio-power" value="0" {{#unless power}} checked="checked"{{/unless}}>
+									        <input type="radio" name="radio-power" value="4" {{#unless power}} checked="checked"{{/unless}}>
 									        <div class="item-media">
 									          	<i class="icon icon-form-radio"></i>
 									        </div>							       
@@ -159,7 +213,7 @@
 								    </li>							   
 								    <li class="col-50 color-red">
 								      	<label class="label-radio item-content ">
-									        <input type="radio" name="radio-power" value="4"  {{#if power}}checked="checked"{{/if}}>
+									        <input type="radio" name="radio-power" value="0"  {{#if power}}checked="checked"{{/if}}>
 									        <div class="item-media">
 									          	<i class="icon icon-form-radio"></i>
 									        </div>							       

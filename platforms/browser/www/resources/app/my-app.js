@@ -826,8 +826,8 @@ App.onPageInit('asset.status', function (page) {
     $$(page.container).find('.open-power').on('click', function () {
         clickedLink = this;            
         popoverHTML = '<div class="popover popover-status">'+                      
-                      '<p class="color-boatwatch">'+LANGUAGE.ASSET_STATUS_MSG45+'</p>'+
-                      '<p>'+LANGUAGE.ASSET_STATUS_MSG46+'</p>'+                       
+                      '<p class="color-boatwatch">'+LANGUAGE.ASSET_STATUS_MSG28+'</p>'+
+                      '<p>'+LANGUAGE.ASSET_STATUS_MSG29+'</p>'+                       
                 '</div>';
         App.popover(popoverHTML, clickedLink);            
     });     
@@ -3150,10 +3150,8 @@ function getMarkerDataTable(asset){
         if (assetFeaturesStatus && assetFeaturesStatus.stats) {
             var speed = 0;
             var mileage = '-';
-            var deirectionCardinal = Protocol.Helper.getDirectionCardinal(asset.posInfo.direct);            
-            var positionType = Protocol.Helper.getPositionType(parseInt(asset.posInfo.positionType));
-            //console.log(asset.posInfo.positionType);
-            //console.log(positionType);
+            var deirectionCardinal = Protocol.Helper.getDirectionCardinal(asset.posInfo.direct);
+
             if (typeof asset.Unit !== "undefined" && typeof asset.posInfo.speed !== "undefined") {
                 speed = Protocol.Helper.getSpeedValue(asset.Unit, asset.posInfo.speed) + ' ' + Protocol.Helper.getSpeedUnit(asset.Unit);
             }        
@@ -3162,11 +3160,7 @@ function getMarkerDataTable(asset){
             }
             var customAddress = !asset.posInfo.customAddress ? LANGUAGE.COM_MSG08 : asset.posInfo.customAddress;
 
-            markerData += '<table cellpadding="0" cellspacing="0" border="0" class="marker-data-table">';
-           /* markerData +=   '<tr>';
-            markerData +=       '<td class="marker-data-caption">'+LANGUAGE.ASSET_TRACK_MSG06+'</td>';
-            markerData +=       '<td class="marker-data-value">'+asset.Name+'</td>';
-            markerData +=   '</tr>';*/
+            markerData += '<table cellpadding="0" cellspacing="0" border="0" class="marker-data-table">';           
             markerData +=   '<tr>';
             markerData +=       '<td class="marker-data-caption">'+LANGUAGE.ASSET_TRACK_MSG07+'</td>';
             markerData +=       '<td class="marker-data-value">'+toTitleCase(assetFeaturesStatus.status.value)+'</td>';
@@ -3182,41 +3176,11 @@ function getMarkerDataTable(asset){
             markerData +=   '<tr>';
             markerData +=       '<td class="marker-data-caption">'+LANGUAGE.ASSET_TRACK_MSG02+'</td>';
             markerData +=       '<td class="marker-data-value">'+speed+'</td>';
-            markerData +=   '</tr>';
-                            /*if (assetFeaturesStatus.acc) {
-            markerData +=   '<tr>';
-            markerData +=       '<td class="marker-data-caption">'+LANGUAGE.ASSET_STATUS_MSG13+'</td>';
-            markerData +=       '<td class="marker-data-value">'+assetFeaturesStatus.acc.value+'</td>';
-            markerData +=   '</tr>';
-                            }    */        
-                            /*if (assetFeaturesStatus.battery) {
-            markerData +=   '<tr>';
-            markerData +=       '<td class="marker-data-caption">'+LANGUAGE.ASSET_TRACK_MSG08+'</td>';
-            markerData +=       '<td class="marker-data-value">'+assetFeaturesStatus.battery.value+'</td>';
-            markerData +=   '</tr>';
-                            }*/
-                            /*if (assetFeaturesStatus.power) {
-            markerData +=   '<tr>';
-            markerData +=       '<td class="marker-data-caption">'+LANGUAGE.ASSET_STATUS_MSG21+'</td>';
-            markerData +=       '<td class="marker-data-value">'+assetFeaturesStatus.power.value+'</td>';
-            markerData +=   '</tr>';
-                            }*/
-                            /*if (assetFeaturesStatus.fuel) {
-            markerData +=   '<tr>';
-            markerData +=       '<td class="marker-data-caption">'+LANGUAGE.ASSET_TRACK_MSG10+'</td>';
-            markerData +=       '<td class="marker-data-value">'+assetFeaturesStatus.fuel.value+'</td>';
-            markerData +=   '</tr>';
-                            }*/
+            markerData +=   '</tr>';                            
             markerData +=   '<tr>';
             markerData +=       '<td class="marker-data-caption">'+LANGUAGE.ASSET_TRACK_MSG01+'</td>';
             markerData +=       '<td class="marker-data-value">'+deirectionCardinal+' ('+asset.posInfo.direct+'&deg;)</td>';
-            markerData +=   '</tr>';
-                            /*if (positionType) {
-            markerData +=   '<tr>';
-            markerData +=       '<td class="marker-data-caption">'+LANGUAGE.ASSET_PLAYBACK_MSG27+'</td>';
-            markerData +=       '<td class="marker-data-value ">'+positionType+'</td>';
-            markerData +=   '</tr>';
-                            }*/
+            markerData +=   '</tr>';                           
             markerData +=   '<tr>';
             markerData +=       '<td class="marker-data-caption">GPS</td>';
             markerData +=       '<td class="marker-data-value ">'+ parseFloat(asset.posInfo.lat).toFixed(5) + ', ' + parseFloat(asset.posInfo.lng).toFixed(5) +'</td>';

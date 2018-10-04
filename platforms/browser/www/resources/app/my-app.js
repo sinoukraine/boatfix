@@ -3110,9 +3110,9 @@ function loadAlarmPage(){
             state: true,
             val: 131072,
         },
-        input1Alarm: {
+        input1Low: {
             state: true,
-            val: 1,
+            val: 524288,
         },
         lowBattery: {
             state: true,
@@ -3157,10 +3157,7 @@ function loadAlarmPage(){
             if (assetAlarmVal & value.val) {                
                 alarms[key].state = false;
             }            
-        });
-       /* if (assetAlarmVal == 230428) {
-            alarms.alarm.state = false;
-        }*/
+        });       
         
     }
 
@@ -3172,7 +3169,7 @@ function loadAlarmPage(){
             Name: POSINFOASSETLIST[TargetAsset.ASSET_IMEI].Name,            
             //alarm: alarms.alarm.state,
             bilge: alarms.bilge.state,
-            input1Alarm: alarms.input1Alarm.state,
+            input1Low: alarms.input1Low.state,
             lowBattery: alarms.lowBattery.state,
             //geofenceIn: alarms.geofenceIn.state,
             geolock: alarms.geolock.state,            

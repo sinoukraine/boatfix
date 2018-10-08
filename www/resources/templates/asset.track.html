@@ -45,7 +45,7 @@
                 <ul class="row no-gutter">
                     <li class="col-33 color-green width-auto">
                         <label class="label-radio item-content ">                                   
-                            <input type="radio" name="Geolock" value="false" {{#unless Geolock}}checked="checked"{{/unless}}>
+                            <input type="radio" name="Geofence" value="false" data-geofence-id="{{GeofenceId}}" {{#unless Geofence}}checked="checked"{{/unless}}>
                             <div class="item-media">
                                 <i class="icon icon-form-radio"></i>
                             </div> 
@@ -63,7 +63,7 @@
                     </li>                              
                     <li class="col-33 color-red width-auto">
                         <label class="label-radio item-content flex-direction-reverse">
-                            <input type="radio" name="Geolock" value="true"  {{#if Geolock}}checked="checked"{{/if}}>
+                            <input type="radio" name="Geofence" value="true" data-geofence-id="{{GeofenceId}}" {{#if Geofence}}checked="checked"{{/if}}>
                             <div class="item-media">
                                 <i class="icon icon-form-radio"></i>
                             </div>  

@@ -169,7 +169,14 @@ function setupPush(){
         });
 
         if　(!localStorage.ACCOUNT){
-            push.clearAllNotifications();
+            push.clearAllNotifications(
+                () => {
+                  console.log('success');
+                },
+                () => {
+                  console.log('error');
+                }
+            );
         }
 }
 
@@ -827,7 +834,7 @@ App.onPageInit('asset.status', function (page) {
                 '</div>';
         App.popover(popoverHTML, clickedLink);            
     });     
-    $$(page.container).find('.open-geolock').on('click', function () {
+    $$(page.container).find('.open-geofence').on('click', function () {
         clickedLink = this;            
         popoverHTML = '<div class="popover popover-status">'+                      
                       '<p class="color-boatwatch">'+LANGUAGE.ASSET_STATUS_MSG24+'</p>'+
@@ -1631,6 +1638,8 @@ App.onPageInit('geofence.add', function (page) {
     });
 });
 
+
+
 App.onPageInit('resetPwd', function (page) {     
     $$('.saveResetPwd').on('click', function(e){    
         var password = {
@@ -2037,7 +2046,7 @@ App.onPageInit('asset.track', function (page) {
             }, 10000);  
 
 
-    var geolock = $$(page.container).find('input[name="Geolock"]');
+    /*var geolock = $$(page.container).find('input[name="Geolock"]');
 
     geolock.on('change', function(){        
         changeGeolockImmobState({id: TargetAsset.ASSET_ID, imei: TargetAsset.ASSET_IMEI, state: strToBool(this.value), name: this.attributes.name.value});
@@ -2051,13 +2060,23 @@ App.onPageInit('asset.track', function (page) {
             }
             window.PosMarker[TargetAsset.ASSET_IMEI+'-geofence'] = false;
         }
-    });
-    /*
-    geolock.on('change', function(){
-        changeGeolockState({id: TargetAsset.ASSET_ID, imei: TargetAsset.ASSET_IMEI, state: strToBool(this.value)});
+    });*/
 
-        if (strToBool(this.value)) {            
-            window.PosMarker[TargetAsset.ASSET_IMEI+'-geofence'] = L.circle([lat, lng], {radius: 100,color: 'red',fillColor: '#f03',fillOpacity: 0.2,});    
+    var geofence = $$(page.container).find('input[name="Geofence"]');
+    geofence.on('change', function(){   
+        var latlng = window.PosMarker[TargetAsset.ASSET_IMEI].getLatLng();   
+        changeAssetGeoFenceSate({
+            id: TargetAsset.ASSET_ID, 
+            imei: TargetAsset.ASSET_IMEI, 
+            state: strToBool(this.value), 
+            geofenceId: $$(this).data('geofence-id'), 
+            geofenceRadius: 100,
+            geofenceName: 'GeoFence ' + TargetAsset.ASSET_IMEI,
+            latlng: latlng,
+            address: latlng.toString(),
+        });
+        if (strToBool(this.value)) {                    
+            window.PosMarker[TargetAsset.ASSET_IMEI+'-geofence'] = L.circle([latlng.lat, latlng.lng], {radius: 100,color: 'red',fillColor: '#f03',fillOpacity: 0.2,});    
             window.PosMarker[TargetAsset.ASSET_IMEI+'-geofence'].addTo(MapTrack);         
         }else{
             if (window.PosMarker[TargetAsset.ASSET_IMEI+'-geofence']) {
@@ -2065,8 +2084,11 @@ App.onPageInit('asset.track', function (page) {
             }
             window.PosMarker[TargetAsset.ASSET_IMEI+'-geofence'] = false;
         }
-    });*/
+    });
+
 });
+
+
 
 App.onPageBeforeRemove('asset.track', function(page){
     clearInterval(trackTimer);
@@ -2314,7 +2336,8 @@ function login(){
                 account.val(null);
                 password.val(null);
                 setUserinfo(result.Data);
-                setAssetList(result.Data.Devices);               
+                setAssetList(result.Data.Devices);   
+                getGeoFenceListFromServer();            
                
                 //init_AssetList(); 
                 //initSearchbar();
@@ -2501,6 +2524,41 @@ function loadGeofencePage(){
     });
 
     
+}
+
+function getGeoFenceListFromServer(){
+    var userInfo = getUserinfo();
+
+    var data = {
+        MajorToken: userInfo.MajorToken,
+        MinorToken: userInfo.MinorToken                
+    };
+    
+    //App.showPreloader();
+    $.ajax({
+           type: "POST",
+            url: API_URL.URL_GET_GEOFENCE_LIST,
+           data: data,
+          async: true,           
+    crossDomain: true, 
+          cache: false,
+        success: function (result) {            
+            //App.hidePreloader();            
+            console.log(result);     
+            if (result.MajorCode == '000' ) {                
+                setGeoFenceList(result.Data);               
+                
+            }else{
+                //App.alert(LANGUAGE.PROMPT_MSG013);
+            }
+                 
+
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown){ 
+           //App.hidePreloader(); 
+           App.alert(LANGUAGE.COM_MSG02);
+        }
+    });
 }
 
 function loadAlarmsAssetsPage(){
@@ -2865,6 +2923,7 @@ function loadStatusPage(){
         if (asset.posInfo.positionTime) {
             time = asset.posInfo.positionTime.format(window.COM_TIMEFORMAT);
         }
+        var assetGeofence = getAssetGeofenceState({imei:TargetAsset.ASSET_IMEI});
 
         var latlng = {};
         latlng.lat = asset.posInfo.lat;
@@ -2878,7 +2937,8 @@ function loadStatusPage(){
             fuel: false,
             engineHours: false,
             stoppedDuration: false,
-            geolock: 'Off',
+            //geolock: 'Off',
+            geofence: 'Off',
             immob: false,
 
             GSM: 'state-0',
@@ -2912,11 +2972,11 @@ function loadStatusPage(){
         if (assetFeaturesStatus.stopped) {
             assetStats.stoppedDuration = assetFeaturesStatus.stopped.duration;
         } 
-        if (assetFeaturesStatus.geolock) {
+        /*if (assetFeaturesStatus.geolock) {
             if (assetFeaturesStatus.geolock.value) {
                 assetStats.geolock = 'On';
             }            
-        } 
+        } */
         if (assetFeaturesStatus.immob) {
             assetStats.immob = assetFeaturesStatus.immob.value;
         }  
@@ -2931,8 +2991,11 @@ function loadStatusPage(){
             if (assetFeaturesStatus.acc.value == 'ON') {
                 assetStats.Power = 'state-1';
             }
-            
-        }       
+        }  
+
+        if (assetGeofence.state) {            
+            assetStats.geofence = 'On';                 
+        }      
 
 
         mainView.router.load({
@@ -2952,7 +3015,8 @@ function loadStatusPage(){
                 Fuel: assetStats.fuel,
                 Temperature: assetStats.temperature,
                 StoppedDuration: assetStats.stoppedDuration,
-                GeolockState: assetStats.geolock,
+                //GeolockState: assetStats.geolock,
+                GeofenceState: assetStats.geofence,
                 Coords: 'GPS: ' + parseFloat(asset.posInfo.lat).toFixed(5) + ', ' + parseFloat(asset.posInfo.lng).toFixed(5),
 
 
@@ -3440,7 +3504,10 @@ function loadTrackPage(params){
         coords: '',
         customAddress: '',
         status: '',
-        geolockState: '',
+        //geolockState: '',
+        geofenceState: '',
+        geofenceCode: '',
+
     };
 //{"title":"Acc off","type":65536,"imei":"0352544073967920","name":"Landcruiser Perth","lat":-32.032898333333335,"lng":115.86817722222216,"speed":0,"direct":0,"time":"2018-04-13 10:16:51"}
     if ((params && parseFloat(params.lat) !== 0 && parseFloat(params.lng) !== 0) || (parseFloat(asset.posInfo.lat) !== 0 && parseFloat(asset.posInfo.lng) !== 0) ){     
@@ -3457,7 +3524,7 @@ function loadTrackPage(params){
             details.direct = parseInt(params.direct);           
             
         }else{  
-            var assetFeaturesStatus = Protocol.Helper.getAssetStateInfo(asset); 
+            var assetFeaturesStatus = Protocol.Helper.getAssetStateInfo(asset);           
 
             if (typeof asset.Unit !== "undefined" && typeof asset.posInfo.speed !== "undefined") {
                 details.speed = Protocol.Helper.getSpeedValue(asset.Unit, asset.posInfo.speed) + ' ' + Protocol.Helper.getSpeedUnit(asset.Unit);
@@ -3472,8 +3539,20 @@ function loadTrackPage(params){
             details.direct = parseInt(asset.posInfo.direct); 
             details.status = toTitleCase(assetFeaturesStatus.status.value);
 
+            var assetGeofence = getAssetGeofenceState({imei:TargetAsset.ASSET_IMEI});
+            if (assetGeofence.state) {
+                details.geofenceState = assetGeofence.state;
+                window.PosMarker[TargetAsset.ASSET_IMEI+'-geofence'] = L.circle([assetGeofence.lat, assetGeofence.lng], {radius: 100,color: 'red',fillColor: '#f03',fillOpacity: 0.2,});
+            }else{
+                window.PosMarker[TargetAsset.ASSET_IMEI+'-geofence'] = false;
+            }
+            if (assetGeofence.code) {
+                details.geofenceCode = assetGeofence.code;
+            }
             
-            if (assetFeaturesStatus.geolock) {
+            
+            
+            /*if (assetFeaturesStatus.geolock) {
                 details.geolockState = assetFeaturesStatus.geolock.value;   
 
                 if (details.geolockState) {
@@ -3481,7 +3560,7 @@ function loadTrackPage(params){
                 }else{
                     window.PosMarker[TargetAsset.ASSET_IMEI+'-geofence'] = false;
                 }                    
-            } 
+            } */
         }
         
         details.direction = Protocol.Helper.getDirectionCardinal(details.direct)+' ('+details.direct+'&deg;)';
@@ -3494,7 +3573,7 @@ function loadTrackPage(params){
 
         checkMapExisting();
         
-      
+        //console.log(details);
         mainView.router.load({
             url:details.templateUrl,
             context:{
@@ -3507,7 +3586,9 @@ function loadTrackPage(params){
                 Lat: details.latlng.lat,
                 Lng: details.latlng.lng,
                 Coords: details.coords,
-                Geolock: details.geolockState
+                //Geolock: details.geolockState,
+                Geofence: details.geofenceState,
+                GeofenceId: details.geofenceCode,
             }
         });        
 
@@ -4286,6 +4367,7 @@ function getNewData(){
                 if (result.Data.Devices) {
                     updateAssetList2(result.Data.Devices);
                 }
+                getGeoFenceListFromServer();
                 
             }
         },
@@ -4686,6 +4768,116 @@ function deleteGeofence(code, index){
         }
     });
 } 
+
+function changeAssetGeoFenceSate(params){
+    var geofenceList = getGeoFenceList();
+    var userInfo = getUserinfo();  
+    var data = {};  
+    var geofence =  geofenceList[params.geofenceId];
+    var isNewGeo = 1;
+
+    if (geofence && typeof(geofence) == 'object') {
+        var assetCodes = '';        
+        if (geofence.SelectedAssetList && geofence.SelectedAssetList.length > 0) {           
+            $.each(geofence.SelectedAssetList ,function(key, val){                
+                assetCodes += ',' + val.AsCode;
+            });
+            //assetCodes = geofence.SelectedAssetList.toString();
+        }        
+        if (assetCodes) {
+            assetCodes = assetCodes.substr(1);
+        }
+        
+        isNewGeo = 0;
+        data = {
+            MajorToken: userInfo.MajorToken,
+            MinorToken: userInfo.MinorToken,
+            Name: geofence.Name,
+            Lat: geofence.Lat,
+            Lng: geofence.Lng,
+            Radius: geofence.Radius,
+            Alerts: geofence.Alerts,
+            DelayTime: 0,
+            AlertConfigState: params.state ? 1 : 0,
+            GeoType: 1,
+            AssetCodes: assetCodes,
+            Address: geofence.Address,
+            Code: geofence.Code,
+        };        
+    }else{
+        data = {
+            MajorToken: userInfo.MajorToken,
+            MinorToken: userInfo.MinorToken,
+            Name: params.geofenceName, 
+            Lat: params.latlng.lat,
+            Lng: params.latlng.lng,
+            Radius: params.geofenceRadius,
+            Alerts: 24,
+            DelayTime: 0,
+            AlertConfigState: params.state ? 1 : 0,
+            GeoType: 1,
+            AssetCodes: params.id,
+            Address: params.address,            
+        };
+    }
+
+    var url = API_URL.URL_GEOFENCE_EDIT;
+    if (isNewGeo) {
+        url = API_URL.URL_GEOFENCE_ADD;
+    }
+    //console.log(data);
+    saveGeofence(url, data);
+}
+
+function saveGeofence(url, params){
+    if (url && params) {
+        App.showPreloader();
+        $.ajax({
+               type: "POST",
+                url: url,
+               data: params,
+              async: true, 
+              cache: false,
+        crossDomain: true,                             
+            success: function (result) { 
+                App.hidePreloader();  
+                if (result.MajorCode == '000') {
+                    getGeoFenceListFromServer();
+                    /*var currentPage = App.getCurrentView().activePage;
+                    if (currentPage.name != 'geofence') {
+                        loadGeofencePage();
+                    }else{                        
+                        $$('[data-page="'+currentPage.name+'"] [data-code="'+params.Code+'"]').data('state',params.AlertConfigState);
+                    }*/
+                    
+                }else{
+                    App.alert(LANGUAGE.PROMPT_MSG013);
+                }
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown){ 
+               App.hidePreloader(); App.alert(LANGUAGE.COM_MSG02);
+            }
+        });
+    }            
+}
+
+function getAssetGeofenceState(params){
+    var geofenceList = getGeoFenceList();
+    var ret = {};
+    if (params.imei) {
+        if (geofenceList && typeof(geofenceList) == 'object' ) {                       
+            $.each(geofenceList, function(index, value){                            
+                if (value.Name == 'GeoFence '+params.imei) {
+                    ret.code = value.Code;  
+                    ret.state = value.State; 
+                    ret.lat = value.Lat; 
+                    ret.lng = value.Lng;                                                                  
+                }
+            });
+        } 
+    }
+    return ret;
+}
 
 function formatArrAssetList(){
     var assetList = getAssetList(); 

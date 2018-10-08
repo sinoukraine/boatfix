@@ -3505,8 +3505,7 @@ function loadTrackPage(params){
         customAddress: '',
         status: '',
         //geolockState: '',
-        geofenceState: '',
-        geofenceCode: '',
+        geofenceState: '',        
 
     };
 //{"title":"Acc off","type":65536,"imei":"0352544073967920","name":"Landcruiser Perth","lat":-32.032898333333335,"lng":115.86817722222216,"speed":0,"direct":0,"time":"2018-04-13 10:16:51"}
@@ -3546,9 +3545,7 @@ function loadTrackPage(params){
             }else{
                 window.PosMarker[TargetAsset.ASSET_IMEI+'-geofence'] = false;
             }
-            if (assetGeofence.code) {
-                details.geofenceCode = assetGeofence.code;
-            }
+            
             
             
             
@@ -3587,8 +3584,7 @@ function loadTrackPage(params){
                 Lng: details.latlng.lng,
                 Coords: details.coords,
                 //Geolock: details.geolockState,
-                Geofence: details.geofenceState,
-                GeofenceId: details.geofenceCode,
+                Geofence: details.geofenceState,               
             }
         });        
 
@@ -4773,16 +4769,21 @@ function changeAssetGeoFenceSate(params){
     var geofenceList = getGeoFenceList();
     var userInfo = getUserinfo();  
     var data = {};  
-    var geofence =  geofenceList[params.geofenceId];
+    
     var isNewGeo = 1;
+    var assetGeofence = getAssetGeofenceState({imei: params.imei});
+    var geofence = ''; 
+    if (!$.isEmptyObject(geofence)) {
+        geofence = geofenceList[assetGeofence.code];
+    }
+    
 
     if (geofence && typeof(geofence) == 'object') {
         var assetCodes = '';        
         if (geofence.SelectedAssetList && geofence.SelectedAssetList.length > 0) {           
             $.each(geofence.SelectedAssetList ,function(key, val){                
                 assetCodes += ',' + val.AsCode;
-            });
-            //assetCodes = geofence.SelectedAssetList.toString();
+            });            
         }        
         if (assetCodes) {
             assetCodes = assetCodes.substr(1);
@@ -4840,10 +4841,12 @@ function saveGeofence(url, params){
               cache: false,
         crossDomain: true,                             
             success: function (result) { 
+                //console.log(result);
                 App.hidePreloader();  
                 if (result.MajorCode == '000') {
+                    //setGeoFenceList(result.Data);      
                     getGeoFenceListFromServer();
-                    /*var currentPage = App.getCurrentView().activePage;
+                    /*
                     if (currentPage.name != 'geofence') {
                         loadGeofencePage();
                     }else{                        

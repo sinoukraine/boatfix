@@ -185,8 +185,7 @@ function onAppPause(){
         $hub.stop();
     }*/
 } 
-function onAppResume(){  
-    console.log('onAppResume');  
+function onAppResume(){ 
     if (localStorage.ACCOUNT && localStorage.PASSWORD) {
         getNewNotifications(); 
         getNewData();
@@ -218,7 +217,7 @@ var App = new Framework7({
     //pushState: true,       
     allowDuplicateUrls: true,    
     sortable: false,    
-    modalTitle: 'BoatFix',
+    modalTitle: 'Boat Fix',
     precompileTemplates: true,
     template7Pages: true,
     onAjaxStart: function(xhr){

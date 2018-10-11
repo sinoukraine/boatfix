@@ -40,11 +40,11 @@
     <platform name="android">
       <resource-file src="google-services.json" target="google-services.json" />
     </platform>
-    <!-- <platform name="ios">
+    <platform name="ios">
       <resource-file src="GoogleService-Info.plist" />
-    </platform> -->
+    </platform>
     
-    <plugin name="cordova-plugin-console" source="npm" spec="1.0.7" />
+    <!-- <plugin name="cordova-plugin-console" source="npm" spec="1.0.7" /> -->
     <plugin name="cordova-plugin-device" source="npm" spec="2.0.2" />
     <plugin name="cordova-plugin-buildinfo" source="npm" spec="2.0.2" />    
     <plugin name="cordova-plugin-dialogs" source="npm" spec="1.2.1" />
@@ -53,23 +53,21 @@
     <plugin name="cordova-plugin-camera" source="npm" spec="4.0.3"  />
     <plugin spec="https://github.com/phonegap/phonegap-mobile-accessibility.git" source="git" />
 
-    <!-- <platform name="ios"> -->
-        <edit-config target="NSCameraUsageDescription" file="*-Info.plist" mode="merge">
-            <string>You can take a photo of your asset using camera and upload it into the app</string>
-        </edit-config>
-        <edit-config target="NSPhotoLibraryUsageDescription" file="*-Info.plist" mode="merge">
-            <string>You can select photo of your asset in your photo library and upload it into the app</string>
-        </edit-config>
-        <!-- <edit-config platform="ios" target="NSLocationWhenInUseUsageDescription" file="*-Info.plist" mode="merge">
-            <string>need location access to find things nearby</string>
-        </edit-config> -->
-        <edit-config target="NSPhotoLibraryAddUsageDescription" file="*-Info.plist" mode="merge">
-            <string>Need photo library access to save pictures there</string>
-        </edit-config>
-        <config-file platform="ios" target="*-Info.plist" parent="ITSAppUsesNonExemptEncryption">
-            <false/>
-        </config-file>
-    <!-- </platform> -->
+    <edit-config target="NSCameraUsageDescription" file="*-Info.plist" mode="merge">
+        <string>You can take a photo of your asset using camera and upload it into the app</string>
+    </edit-config>
+    <edit-config target="NSPhotoLibraryUsageDescription" file="*-Info.plist" mode="merge">
+        <string>You can select photo of your asset in your photo library and upload it into the app</string>
+    </edit-config>
+    <!-- <edit-config platform="ios" target="NSLocationWhenInUseUsageDescription" file="*-Info.plist" mode="merge">
+        <string>need location access to find things nearby</string>
+    </edit-config> -->
+    <edit-config target="NSPhotoLibraryAddUsageDescription" file="*-Info.plist" mode="merge">
+        <string>Need photo library access to save pictures there</string>
+    </edit-config>
+    <config-file platform="ios" target="*-Info.plist" parent="ITSAppUsesNonExemptEncryption">
+        <false/>
+    </config-file>  
 
 
     <platform name="android">
@@ -88,7 +86,7 @@
         <splash density="port-xxxhdpi" src="www/res/screen/android/drawable-port-xxxhdpi-screen.png" />
     </platform>
     <platform name="ios">
-      <!-- <icon height="57" platform="ios" src="www/res/icon/ios/icon.png" width="57" />
+      <icon height="57" platform="ios" src="www/res/icon/ios/icon.png" width="57" />
       <icon height="114" platform="ios" src="www/res/icon/ios/icon@2x.png" width="114" />
       <icon height="40" platform="ios" src="www/res/icon/ios/icon-40.png" width="40" />
       <icon height="80" platform="ios" src="www/res/icon/ios/icon-40@2x.png" width="80" />
@@ -111,13 +109,8 @@
       <splash height="2048" platform="ios" src="www/res/screen/ios/Default-Portrait@2x~ipad.png" width="1536" />
       <splash height="1024" platform="ios" src="www/res/screen/ios/Default-Portrait~ipad.png" width="768" />
       <splash height="960" platform="ios" src="www/res/screen/ios/Default@2x~iphone.png" width="640" />
-      <splash height="480" platform="ios" src="www/res/screen/ios/Default~iphone.png" width="320" /> -->
-    </platform>  
+      <splash height="480" platform="ios" src="www/res/screen/ios/Default~iphone.png" width="320" />
+      </platform>  
     <splash src="splash.png" />
     <icon src="icon.png" />
-
-
-    
-
-    
 </widget>

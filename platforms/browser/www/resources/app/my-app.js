@@ -185,8 +185,7 @@ function onAppPause(){
         $hub.stop();
     }*/
 } 
-function onAppResume(){  
-    console.log('onAppResume');  
+function onAppResume(){      
     if (localStorage.ACCOUNT && localStorage.PASSWORD) {
         getNewNotifications(); 
         getNewData();
@@ -3003,6 +3002,7 @@ function loadStatusPage(){
             assetStats.temperature = assetFeaturesStatus.temperature.value;
         }
         if (assetFeaturesStatus.stopped) {
+            //console.log(assetFeaturesStatus.stopped);
             assetStats.stoppedDuration = assetFeaturesStatus.stopped.duration;
         } 
         /*if (assetFeaturesStatus.geolock) {
@@ -4322,9 +4322,9 @@ function setAssetListPosInfo(listObj){
             }else{
                 //console.log(result);
             }
-            loginDone = 1;
+            localStorage.loginDone = 1;
         },
-        function(){loginDone = 1; }
+        function(){localStorage.loginDone = 1; }
     ); 
 }
 

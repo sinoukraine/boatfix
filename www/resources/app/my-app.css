@@ -286,6 +286,9 @@ html:not(.watch-active-state) .button.btn_login.button-fill:active{
 		background: rgba(255, 255, 255, .4);
 		margin: 8px 0;
 	}
+	.header_row {
+		line-height: 1.8;
+	}
 .menu_wrapper {
     position: relative;
     min-height: 100%;

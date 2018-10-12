@@ -185,7 +185,7 @@ function onAppPause(){
         $hub.stop();
     }*/
 } 
-function onAppResume(){      
+function onAppResume(){ 
     if (localStorage.ACCOUNT && localStorage.PASSWORD) {
         getNewNotifications(); 
         getNewData();
@@ -211,14 +211,13 @@ function backFix(event){
 
 // Initialize your app
 var App = new Framework7({
-    animateNavBackIcon: true,    
-    swipeBackPage: false,    
+    swipePanel: 'left',   
+    swipeBackPage: false,
+    material: true,
     //pushState: true,       
-    swipePanel: 'left', 
     allowDuplicateUrls: true,    
     sortable: false,    
     modalTitle: 'Boat Fix',
-    notificationTitle: 'Boat Fix',
     precompileTemplates: true,
     template7Pages: true,
     onAjaxStart: function(xhr){
@@ -235,7 +234,6 @@ var $$ = Dom7;
 // Add view
 var mainView = App.addView('.view-main', {
     domCache: true,  
-    dynamicNavbar: true,
     swipeBackPage: false
 });
 
@@ -331,12 +329,8 @@ var html = Template7.templates.template_Login_Screen();
 $$(document.body).append(html); 
 html = Template7.templates.template_Popover_Menu();
 $$(document.body).append(html);
-/*html = Template7.templates.template_AssetList();
-$$('.navbar-fixed').append(html);*/
-$$('.index-title').html(LANGUAGE.MENU_MSG00);
-$$('.index-search-input').attr('placeholder',LANGUAGE.COM_MSG06);
-$$('.index-search-cancel').html(LANGUAGE.COM_MSG04);
-$$('.index-search-nothing-found').html(LANGUAGE.COM_MSG05);
+html = Template7.templates.template_AssetList();
+$$('.navbar-fixed').append(html);
 
 
 if (inBrowser) {
@@ -371,7 +365,7 @@ var virtualAssetList = App.virtualList('.assets_list', {
             
             height = 127;
         }*/
-        var height = 79; 
+        var height = 88; 
         return height; //display the image with 50px height
     },
     // Display the each item using Template7 template parameter
@@ -1148,7 +1142,7 @@ App.onPageInit('alarms.assets', function (page) {
     
     var virtualAlarmsAssetsList = App.virtualList('.alarmsAssetList', { 
         items: newAssetlist,
-        height: 44,
+        height: 88,
         searchAll: function (query, items) {           
             var foundItems = [];        
             for (var i = 0; i < items.length; i++) {           
@@ -1170,23 +1164,9 @@ App.onPageInit('alarms.assets', function (page) {
         },*/
         renderItem: function (index, item) {
             var ret = '';
-            //var assetImg = getAssetImg(item, {'assetList':true}); 
+            var assetImg = getAssetImg(item, {'assetList':true}); 
 
             ret +=  '<li data-index="'+index+'">';
-            ret +=      '<label class="label-checkbox item-content">';
-                 if (item.Selected) {
-                    ret +=          '<input type="checkbox" name="alarms-assets" value="" data-id="' + item.Id + '" data-imei="' + item.IMEI + '" checked="true" >';
-                }else{
-                    ret +=          '<input type="checkbox" name="alarms-assets" value="" data-id="' + item.Id + '" data-imei="' + item.IMEI + '" >';
-                } 
-            ret +=          '<div class="item-media"><i class="icon icon-form-checkbox"></i></div>';
-            ret +=          '<div class="item-inner">';
-            ret +=              '<div class="item-title">' + item.Name + '</div>';
-            ret +=          '</div>';
-            ret +=      '</label>';
-            ret +=  '</li>';
-
-            /*ret +=  '<li data-index="'+index+'">';
             ret +=      '<label class="label-checkbox item-content no-fastclick">';
                  if (item.Selected) {
                     ret +=          '<input type="checkbox" name="alarms-assets" value="" data-id="' + item.Id + '" data-imei="' + item.IMEI + '" checked="true" >';
@@ -1204,7 +1184,7 @@ App.onPageInit('alarms.assets', function (page) {
             ret +=              '</div>';
             ret +=          '</div>';
             ret +=      '</label>';
-            ret +=  '</li>';*/
+            ret +=  '</li>';
             
             return  ret;
         }
@@ -1279,8 +1259,7 @@ App.onPageInit('alarms.assets', function (page) {
 
 App.onPageInit('alarms.select', function (page) {
    
-    $(page.container).find('input[type="radio"]').checkRadioTweak();  
-
+        
     $$('.saveAlarm').on('click', function(e){        
         var alarmOptions = {
             IMEI: $$(page.container).find('input[name="Assets"]').val(),
@@ -1700,8 +1679,6 @@ App.onPageInit('resetPwd', function (page) {
 });
 
 App.onPageInit('asset.alarm', function (page) {    
-
-    $(page.container).find('input[type="radio"]').checkRadioTweak();  
     
     $$('.saveAlarm').on('click', function(e){        
         var alarmOptions = {
@@ -1753,7 +1730,7 @@ App.onPageInit('asset.playback', function (page) {
                           '<div class="toolbar-inner">'+
                             '<div class="left"><div class="text">'+LANGUAGE.ASSET_PLAYBACK_MSG04+'</div></div>'+
                             '<div class="right">'+
-                              '<a href="#" class="link close-picker color-white">{{closeText}}</a>'+
+                              '<a href="#" class="link close-picker color-black">{{closeText}}</a>'+
                             '</div>'+
                           '</div>'+
                         '</div>',
@@ -1810,7 +1787,7 @@ App.onPageInit('asset.playback', function (page) {
                           '<div class="toolbar-inner">'+
                             '<div class="left"><div class="text">'+LANGUAGE.ASSET_PLAYBACK_MSG05+'</div></div>'+
                             '<div class="right">'+
-                              '<a href="#" class="link close-picker color-white">{{closeText}}</a>'+
+                              '<a href="#" class="link close-picker color-black">{{closeText}}</a>'+
                             '</div>'+
                           '</div>'+
                         '</div>',
@@ -1860,7 +1837,7 @@ App.onPageInit('asset.playback', function (page) {
                           '<div class="toolbar-inner">'+
                             '<div class="left"><div class="text">'+LANGUAGE.ASSET_PLAYBACK_MSG06+'</div></div>'+
                             '<div class="right">'+
-                              '<a href="#" class="link close-picker color-white">{{closeText}}</a>'+
+                              '<a href="#" class="link close-picker color-black">{{closeText}}</a>'+
                             '</div>'+
                           '</div>'+
                         '</div>',
@@ -1916,7 +1893,7 @@ App.onPageInit('asset.playback', function (page) {
                           '<div class="toolbar-inner">'+
                             '<div class="left"><div class="text">'+LANGUAGE.ASSET_PLAYBACK_MSG07+'</div></div>'+
                             '<div class="right">'+
-                              '<a href="#" class="link close-picker color-white">{{closeText}}</a>'+
+                              '<a href="#" class="link close-picker color-black">{{closeText}}</a>'+
                             '</div>'+
                           '</div>'+
                         '</div>',
@@ -2026,8 +2003,7 @@ App.onPageInit('asset.location', function (page) {
     });
 });
 
-App.onPageInit('asset.track', function (page) {   
-    $(page.container).find('input[name="Geofence"]').checkRadioTweak();  
+App.onPageInit('asset.track', function (page) {     
     showMap();
 
     var posTime = $$(page.container).find('.position_time');
@@ -2084,18 +2060,9 @@ App.onPageInit('asset.track', function (page) {
             window.PosMarker[TargetAsset.ASSET_IMEI+'-geofence'] = false;
         }
     });*/
-    var geofenceTitles = $$(page.container).find('.geofenceSetList .item-title');
+
     var geofence = $$(page.container).find('input[name="Geofence"]');
-    
-
-    geofenceTitles.on('click touch', function(){
-        var radio = $$(this).siblings('.check-radio-tweak-wrapper');       
-        if (radio.length) {
-            radio.click();
-        }
-    });
-
-    geofence.on('change', function(){ 
+    geofence.on('change', function(){   
         var latlng = window.PosMarker[TargetAsset.ASSET_IMEI].getLatLng();   
         changeAssetGeoFenceSate({
             id: TargetAsset.ASSET_ID, 
@@ -3002,7 +2969,6 @@ function loadStatusPage(){
             assetStats.temperature = assetFeaturesStatus.temperature.value;
         }
         if (assetFeaturesStatus.stopped) {
-            //console.log(assetFeaturesStatus.stopped);
             assetStats.stoppedDuration = assetFeaturesStatus.stopped.duration;
         } 
         /*if (assetFeaturesStatus.geolock) {
@@ -4874,7 +4840,7 @@ function saveGeofence(url, params){
               cache: false,
         crossDomain: true,                             
             success: function (result) { 
-                console.log(result);
+                //console.log(result);
                 App.hidePreloader();  
                 if (result.MajorCode == '000') {
                     //setGeoFenceList(result.Data);      

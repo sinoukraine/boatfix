@@ -39,8 +39,8 @@ window.LanguagePackages= {
 		"COM_MSG35": "No",	
 		"COM_MSG36": "Can't execute request. Please, try again later",	
 		"COM_MSG38": "OK",
-		"COM_MSG39": "Okay",
-		"COM_MSG40": "Alert",
+		"COM_MSG39": "Off",
+		"COM_MSG40": "On",
 
 		"PROMPT_MSG001": "Live tracking started",
 		"PROMPT_MSG002": "Live tracking stopped",
@@ -131,7 +131,7 @@ window.LanguagePackages= {
 		"ALARM_MSG14": "No Driver Alert",
 		"ALARM_MSG15": "Input 1 Alarm",
 		"ALARM_MSG16": "Input 1 Low Alarm",
-		"ALARM_MSG17": "Low Internal Battery",
+		"ALARM_MSG17": "Low Battery",
 		"ALARM_MSG18": "Main Power Disconnection",
 		"ALARM_MSG19": "SOS Duress",
 		"ALARM_MSG20": "Positive Input",
@@ -140,6 +140,8 @@ window.LanguagePackages= {
 		"ALARM_MSG23": "Speed Alert",
 		"ALARM_MSG24": "Turn on/Turn off all",
 		"ALARM_MSG25": "Outboard Engine Removal",
+		"ALARM_MSG26": "On",
+		"ALARM_MSG27": "Off",
 
 		"ASSET_STATUS_MSG00": "Date, time",
 		"ASSET_STATUS_MSG01": "Heading",
@@ -169,7 +171,7 @@ window.LanguagePackages= {
 		"ASSET_STATUS_MSG25": "Immobilisation",
 		"ASSET_STATUS_MSG26": "Cell Reception",
 		"ASSET_STATUS_MSG27": "GPS",
-		"ASSET_STATUS_MSG28": "Power",
+		"ASSET_STATUS_MSG28": "Ignition",
 
 		"ASSET_STATUS_MSG29": "Ignition power - ON when engine is running and OFF when engine is off.",	
 		"ASSET_STATUS_MSG30": "Remote immobilisation - OFF is inactive, ON is active.",
@@ -185,7 +187,7 @@ window.LanguagePackages= {
 		"ASSET_STATUS_MSG40": "Displays the level of fuel in the tank.",
 		"ASSET_STATUS_MSG41": "Constant power detected",
 		"ASSET_STATUS_MSG42": "Immobilisation - red icon, when asset is immobilized, grey icon when asset unimmobilized.",
-		"ASSET_STATUS_MSG43": "Geo Fence - green icon, when Geo Fence is turned off, red icon when Geo Fence turned on.",
+		"ASSET_STATUS_MSG43": "Geo Fence - gray icon, when Geo Fence is turned off, red icon when Geo Fence turned on.",
 
 		"ASSET_STATUS_MSG44": "GSM Coverage",
 		"ASSET_STATUS_MSG45": "GPS Signal",

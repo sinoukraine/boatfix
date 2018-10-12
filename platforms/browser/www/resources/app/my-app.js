@@ -4110,8 +4110,8 @@ function updateAssetsListStats(){
                         state.addClass('state-3'); 
                         $$('.position_geolock .item-after').addClass('state-3').html('On');                       
                     }else{
-                        state.addClass('state-1');
-                        $$('.position_geolock .item-after').addClass('state-1').html('Off');   
+                        state.addClass('state-0');
+                        $$('.position_geolock .item-after').addClass('state-0').html('Off');   
                     }       
                     
                     
@@ -4874,7 +4874,7 @@ function saveGeofence(url, params){
               cache: false,
         crossDomain: true,                             
             success: function (result) { 
-                //console.log(result);
+                console.log(result);
                 App.hidePreloader();  
                 if (result.MajorCode == '000') {
                     //setGeoFenceList(result.Data);      
@@ -4886,6 +4886,8 @@ function saveGeofence(url, params){
                         $$('[data-page="'+currentPage.name+'"] [data-code="'+params.Code+'"]').data('state',params.AlertConfigState);
                     }*/
                     
+                }else if(result.MajorCode == '100' && result.MinorCode == '1003'){                  
+                    showCustomMessage({title: LANGUAGE.PROMPT_MSG050, text: LANGUAGE.PROMPT_MSG051}); 
                 }else{
                     App.alert(LANGUAGE.PROMPT_MSG013);
                 }

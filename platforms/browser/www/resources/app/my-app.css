@@ -254,18 +254,27 @@ html:not(.watch-active-state) .button.btn_login.button-fill:active{
     position: relative;
     min-height: 100%;
 }
+.call-button{
+	max-width: 260px;
+    margin: auto;
+}
+	.call-button i{
+		vertical-align: middle;
+		/* font-size: 20px; */
+		margin-right: 5px;
+	}
 .menu_bottom {
     position: absolute;
-    bottom: 0;
+    bottom: 16px;
     left: 0;
     width: 100%;
-    height: 60px;
+    height: 64px;
     box-sizing: border-box;
-    padding: 8px 16px;
+    padding: 16px;
 }
 .menu{
 	margin: 16px 0 0;
-	padding-bottom: 76px;
+	padding-bottom: 80px;
 }
 	.menu ul:before,
 	.menu ul:after{

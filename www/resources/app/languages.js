@@ -41,7 +41,7 @@ window.LanguagePackages= {
 		"COM_MSG38": "OK",
 		"COM_MSG39": "Off",
 		"COM_MSG40": "On",
-		"COM_MSG41": "Sort List",
+		"COM_MSG41": "Sort List By",
 		"COM_MSG42": "Name",
 		"COM_MSG43": "Status",
 

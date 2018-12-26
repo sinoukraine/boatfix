@@ -41,6 +41,9 @@ window.LanguagePackages= {
 		"COM_MSG38": "OK",
 		"COM_MSG39": "Off",
 		"COM_MSG40": "On",
+		"COM_MSG41": "Sort List",
+		"COM_MSG42": "Name",
+		"COM_MSG43": "Status",
 
 		"PROMPT_MSG001": "Live tracking started",
 		"PROMPT_MSG002": "Live tracking stopped",
@@ -140,8 +143,6 @@ window.LanguagePackages= {
 		"ALARM_MSG23": "Speed Alert",
 		"ALARM_MSG24": "Turn on/Turn off all",
 		"ALARM_MSG25": "Outboard Engine Removal",
-		"ALARM_MSG26": "On",
-		"ALARM_MSG27": "Off",
 
 		"ASSET_STATUS_MSG00": "Date, time",
 		"ASSET_STATUS_MSG01": "Heading",

@@ -185,7 +185,7 @@ function onAppPause(){
         $hub.stop();
     }*/
 } 
-function onAppResume(){      
+function onAppResume(){ 
     if (localStorage.ACCOUNT && localStorage.PASSWORD) {
         getNewNotifications(); 
         getNewData();
@@ -211,14 +211,13 @@ function backFix(event){
 
 // Initialize your app
 var App = new Framework7({
-    animateNavBackIcon: true,    
-    swipeBackPage: false,    
+    swipePanel: 'left',   
+    swipeBackPage: false,
+    material: true,
     //pushState: true,       
-    swipePanel: 'left', 
     allowDuplicateUrls: true,    
     sortable: false,    
     modalTitle: 'Boat Fix',
-    notificationTitle: 'Boat Fix',
     precompileTemplates: true,
     template7Pages: true,
     onAjaxStart: function(xhr){
@@ -235,7 +234,6 @@ var $$ = Dom7;
 // Add view
 var mainView = App.addView('.view-main', {
     domCache: true,  
-    dynamicNavbar: true,
     swipeBackPage: false
 });
 
@@ -331,12 +329,8 @@ var html = Template7.templates.template_Login_Screen();
 $$(document.body).append(html); 
 html = Template7.templates.template_Popover_Menu();
 $$(document.body).append(html);
-/*html = Template7.templates.template_AssetList();
-$$('.navbar-fixed').append(html);*/
-$$('.index-title').html(LANGUAGE.MENU_MSG00);
-$$('.index-search-input').attr('placeholder',LANGUAGE.COM_MSG06);
-$$('.index-search-cancel').html(LANGUAGE.COM_MSG04);
-$$('.index-search-nothing-found').html(LANGUAGE.COM_MSG05);
+html = Template7.templates.template_AssetList();
+$$('.navbar-fixed').append(html);
 
 
 if (inBrowser) {
@@ -371,7 +365,7 @@ var virtualAssetList = App.virtualList('.assets_list', {
             
             height = 127;
         }*/
-        var height = 79; 
+        var height = 88; 
         return height; //display the image with 50px height
     },
     // Display the each item using Template7 template parameter
@@ -497,6 +491,69 @@ $$('body').on('change keyup input click', '.only_numbers', function(){
 	}
 });
 
+$$('body').on('click', '.sorting_button', function(e){  
+    var clickedLink = this;
+    var popoverHTML = '<div class="popover">'+
+                      '<div class="popover-inner">'+
+                       /* '<div class="list-block-title">About Popover created dynamically.</div>'+*/
+                        '<div class="list-block">'+
+                          '<ul>'+
+                          '<li><a href="#" class="item-divider">'+LANGUAGE.COM_MSG41+'</a></li>'+
+                          '<li><a href="#" class="item-link list-button" onClick="sortAssetList(this);" data-sort-by="name" >'+LANGUAGE.COM_MSG42+'</a></li>'+
+                          '<li><a href="#" class="item-link list-button" onClick="sortAssetList(this);" data-sort-by="state" >'+LANGUAGE.COM_MSG43+'</a></li>'+                          
+                          '</ul>'+
+                        '</div>'+
+                      '</div>'+
+                    '</div>';
+    App.popover(popoverHTML, clickedLink);
+});
+
+function sortAssetList(elem){
+    if (elem) {
+        var $elem = $$(elem);
+        var sortType = $elem.data("sort-by");
+        //var sortOrder = $elem.data("sort-order");
+        if (virtualAssetList && virtualAssetList.items && virtualAssetList.items.length) {
+            var assets = virtualAssetList.items;
+            
+            assets = sortListByState(assets, sortType);                 
+
+            virtualAssetList.replaceAllItems(assets); 
+        }
+    }
+    App.closeModal();
+}
+
+function sortListByState(array, sortType){
+    if (array && array.length) {
+        switch(sortType){ 
+            case 'state':
+                var oneDay = 1000*60*60*24;
+                var now = moment();
+                array.reverse();
+                array.sort(function(a,b){ 
+                    var ret = 0;                       
+                    if (POSINFOASSETLIST[a.IMEI] && POSINFOASSETLIST[a.IMEI].posInfo && POSINFOASSETLIST[a.IMEI].posInfo.positionTime) {
+                        var dateDifference = Protocol.Helper.getDifferenceBTtwoDates(POSINFOASSETLIST[a.IMEI].posInfo.positionTime, now);
+                        if (dateDifference <= oneDay) ret = -1;
+                    }
+                    return ret;
+                });
+
+                break;
+
+            default:
+                array.sort(function(a,b){
+                    if(a.Name < b.Name) return -1;
+                    if(a.Name > b.Name) return 1;
+                    return 0;
+                });
+        }  
+    }
+
+    return array;
+}
+
 $$('body').on('click', 'a.external', function(event) {
     event.preventDefault();
     var href = this.getAttribute('href');
@@ -543,12 +600,9 @@ $$('#menu li').on('click', function () {
             loadPageSupport(); 
             break;  */   
         case 'menuUserManual':
-            /*showCustomMessage({
-                title: LANGUAGE.MENU_MSG12,
-                text: LANGUAGE.PROMPT_MSG053,
-            });*/
             showUserGuide();
-            break;    
+            break; 
+
         case 'menuLogout':
             App.confirm(LANGUAGE.PROMPT_MSG012, LANGUAGE.MENU_MSG04, function () {        
                 logout();
@@ -557,8 +611,6 @@ $$('#menu li').on('click', function () {
         
     }
 });
-
-
 
 /*$$('body').on('click', '.navbar_title, .navbar_title_index', function(){
     var json = '{"title":"GEOLOCK WARNING","type":1024,"imei":"0000001700091735","name":"0000001700091735","lat":43.895091666666666,"lng":125.29207,"speed":0,"direct":0,"time":"2018-08-23 16:56:36"}';
@@ -1151,7 +1203,7 @@ App.onPageInit('alarms.assets', function (page) {
     
     var virtualAlarmsAssetsList = App.virtualList('.alarmsAssetList', { 
         items: newAssetlist,
-        height: 44,
+        height: 88,
         searchAll: function (query, items) {           
             var foundItems = [];        
             for (var i = 0; i < items.length; i++) {           
@@ -1173,23 +1225,9 @@ App.onPageInit('alarms.assets', function (page) {
         },*/
         renderItem: function (index, item) {
             var ret = '';
-            //var assetImg = getAssetImg(item, {'assetList':true}); 
+            var assetImg = getAssetImg(item, {'assetList':true}); 
 
             ret +=  '<li data-index="'+index+'">';
-            ret +=      '<label class="label-checkbox item-content">';
-                 if (item.Selected) {
-                    ret +=          '<input type="checkbox" name="alarms-assets" value="" data-id="' + item.Id + '" data-imei="' + item.IMEI + '" checked="true" >';
-                }else{
-                    ret +=          '<input type="checkbox" name="alarms-assets" value="" data-id="' + item.Id + '" data-imei="' + item.IMEI + '" >';
-                } 
-            ret +=          '<div class="item-media"><i class="icon icon-form-checkbox"></i></div>';
-            ret +=          '<div class="item-inner">';
-            ret +=              '<div class="item-title">' + item.Name + '</div>';
-            ret +=          '</div>';
-            ret +=      '</label>';
-            ret +=  '</li>';
-
-            /*ret +=  '<li data-index="'+index+'">';
             ret +=      '<label class="label-checkbox item-content no-fastclick">';
                  if (item.Selected) {
                     ret +=          '<input type="checkbox" name="alarms-assets" value="" data-id="' + item.Id + '" data-imei="' + item.IMEI + '" checked="true" >';
@@ -1207,7 +1245,7 @@ App.onPageInit('alarms.assets', function (page) {
             ret +=              '</div>';
             ret +=          '</div>';
             ret +=      '</label>';
-            ret +=  '</li>';*/
+            ret +=  '</li>';
             
             return  ret;
         }
@@ -1282,8 +1320,7 @@ App.onPageInit('alarms.assets', function (page) {
 
 App.onPageInit('alarms.select', function (page) {
    
-    $(page.container).find('input[type="radio"]').checkRadioTweak();  
-
+        
     $$('.saveAlarm').on('click', function(e){        
         var alarmOptions = {
             IMEI: $$(page.container).find('input[name="Assets"]').val(),
@@ -1703,8 +1740,6 @@ App.onPageInit('resetPwd', function (page) {
 });
 
 App.onPageInit('asset.alarm', function (page) {    
-
-    $(page.container).find('input[type="radio"]').checkRadioTweak();  
     
     $$('.saveAlarm').on('click', function(e){        
         var alarmOptions = {
@@ -1756,7 +1791,7 @@ App.onPageInit('asset.playback', function (page) {
                           '<div class="toolbar-inner">'+
                             '<div class="left"><div class="text">'+LANGUAGE.ASSET_PLAYBACK_MSG04+'</div></div>'+
                             '<div class="right">'+
-                              '<a href="#" class="link close-picker color-white">{{closeText}}</a>'+
+                              '<a href="#" class="link close-picker color-black">{{closeText}}</a>'+
                             '</div>'+
                           '</div>'+
                         '</div>',
@@ -1813,7 +1848,7 @@ App.onPageInit('asset.playback', function (page) {
                           '<div class="toolbar-inner">'+
                             '<div class="left"><div class="text">'+LANGUAGE.ASSET_PLAYBACK_MSG05+'</div></div>'+
                             '<div class="right">'+
-                              '<a href="#" class="link close-picker color-white">{{closeText}}</a>'+
+                              '<a href="#" class="link close-picker color-black">{{closeText}}</a>'+
                             '</div>'+
                           '</div>'+
                         '</div>',
@@ -1863,7 +1898,7 @@ App.onPageInit('asset.playback', function (page) {
                           '<div class="toolbar-inner">'+
                             '<div class="left"><div class="text">'+LANGUAGE.ASSET_PLAYBACK_MSG06+'</div></div>'+
                             '<div class="right">'+
-                              '<a href="#" class="link close-picker color-white">{{closeText}}</a>'+
+                              '<a href="#" class="link close-picker color-black">{{closeText}}</a>'+
                             '</div>'+
                           '</div>'+
                         '</div>',
@@ -1919,7 +1954,7 @@ App.onPageInit('asset.playback', function (page) {
                           '<div class="toolbar-inner">'+
                             '<div class="left"><div class="text">'+LANGUAGE.ASSET_PLAYBACK_MSG07+'</div></div>'+
                             '<div class="right">'+
-                              '<a href="#" class="link close-picker color-white">{{closeText}}</a>'+
+                              '<a href="#" class="link close-picker color-black">{{closeText}}</a>'+
                             '</div>'+
                           '</div>'+
                         '</div>',
@@ -2029,8 +2064,7 @@ App.onPageInit('asset.location', function (page) {
     });
 });
 
-App.onPageInit('asset.track', function (page) {   
-    $(page.container).find('input[name="Geofence"]').checkRadioTweak();  
+App.onPageInit('asset.track', function (page) {     
     showMap();
 
     var posTime = $$(page.container).find('.position_time');
@@ -2087,18 +2121,9 @@ App.onPageInit('asset.track', function (page) {
             window.PosMarker[TargetAsset.ASSET_IMEI+'-geofence'] = false;
         }
     });*/
-    var geofenceTitles = $$(page.container).find('.geofenceSetList .item-title');
+
     var geofence = $$(page.container).find('input[name="Geofence"]');
-    
-
-    geofenceTitles.on('click touch', function(){
-        var radio = $$(this).siblings('.check-radio-tweak-wrapper');       
-        if (radio.length) {
-            radio.click();
-        }
-    });
-
-    geofence.on('change', function(){ 
+    geofence.on('change', function(){   
         var latlng = window.PosMarker[TargetAsset.ASSET_IMEI].getLatLng();   
         changeAssetGeoFenceSate({
             id: TargetAsset.ASSET_ID, 
@@ -2438,6 +2463,8 @@ function init_AssetList() {
         if(a.Name > b.Name) return 1;
         return 0;
     });
+
+    newAssetlist = sortListByState(newAssetlist,'state');
     
     mainView.router.back({
         pageName: 'index', 
@@ -3005,7 +3032,6 @@ function loadStatusPage(){
             assetStats.temperature = assetFeaturesStatus.temperature.value;
         }
         if (assetFeaturesStatus.stopped) {
-            //console.log(assetFeaturesStatus.stopped);
             assetStats.stoppedDuration = assetFeaturesStatus.stopped.duration;
         } 
         /*if (assetFeaturesStatus.geolock) {
@@ -4877,7 +4903,7 @@ function saveGeofence(url, params){
               cache: false,
         crossDomain: true,                             
             success: function (result) { 
-                console.log(result);
+                //console.log(result);
                 App.hidePreloader();  
                 if (result.MajorCode == '000') {
                     //setGeoFenceList(result.Data);      
@@ -4967,6 +4993,7 @@ function showUserGuide(){
         window.open(href,'_blank');
     }
 }
+
 
 
 /* ASSET EDIT PHOTO */

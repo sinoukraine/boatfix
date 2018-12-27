@@ -494,8 +494,7 @@ $$('body').on('change keyup input click', '.only_numbers', function(){
 $$('body').on('click', '.sorting_button', function(e){  
     var clickedLink = this;
     var popoverHTML = '<div class="popover">'+
-                      '<div class="popover-inner">'+
-                       /* '<div class="list-block-title">About Popover created dynamically.</div>'+*/
+                      '<div class="popover-inner">'+                       
                         '<div class="list-block">'+
                           '<ul>'+
                           '<li><a href="#" class="item-divider">'+LANGUAGE.COM_MSG41+'</a></li>'+
@@ -508,51 +507,7 @@ $$('body').on('click', '.sorting_button', function(e){
     App.popover(popoverHTML, clickedLink);
 });
 
-function sortAssetList(elem){
-    if (elem) {
-        var $elem = $$(elem);
-        var sortType = $elem.data("sort-by");
-        //var sortOrder = $elem.data("sort-order");
-        if (virtualAssetList && virtualAssetList.items && virtualAssetList.items.length) {
-            var assets = virtualAssetList.items;
-            
-            assets = sortListByState(assets, sortType);                 
 
-            virtualAssetList.replaceAllItems(assets); 
-        }
-    }
-    App.closeModal();
-}
-
-function sortListByState(array, sortType){
-    if (array && array.length) {
-        switch(sortType){ 
-            case 'state':
-                var oneDay = 1000*60*60*24;
-                var now = moment();
-                array.reverse();
-                array.sort(function(a,b){ 
-                    var ret = 0;                       
-                    if (POSINFOASSETLIST[a.IMEI] && POSINFOASSETLIST[a.IMEI].posInfo && POSINFOASSETLIST[a.IMEI].posInfo.positionTime) {
-                        var dateDifference = Protocol.Helper.getDifferenceBTtwoDates(POSINFOASSETLIST[a.IMEI].posInfo.positionTime, now);
-                        if (dateDifference <= oneDay) ret = -1;
-                    }
-                    return ret;
-                });
-
-                break;
-
-            default:
-                array.sort(function(a,b){
-                    if(a.Name < b.Name) return -1;
-                    if(a.Name > b.Name) return 1;
-                    return 0;
-                });
-        }  
-    }
-
-    return array;
-}
 
 $$('body').on('click', 'a.external', function(event) {
     event.preventDefault();
@@ -2458,11 +2413,11 @@ function init_AssetList() {
         newAssetlist.push(assetList[value]);       
     });
 
-    newAssetlist.sort(function(a,b){
+    /*newAssetlist.sort(function(a,b){
         if(a.Name < b.Name) return -1;
         if(a.Name > b.Name) return 1;
         return 0;
-    });
+    });*/
 
     newAssetlist = sortListByState(newAssetlist,'state');
     
@@ -4433,6 +4388,56 @@ function getNewData(){
     ); 
    
 
+}
+
+function sortAssetList(elem){
+    if (elem) {
+        var $elem = $$(elem);
+        var sortType = $elem.data("sort-by");
+        //var sortOrder = $elem.data("sort-order");
+        if (virtualAssetList && virtualAssetList.items && virtualAssetList.items.length) {
+            var assets = virtualAssetList.items;
+            
+            assets = sortListByState(assets, sortType);                 
+
+            virtualAssetList.replaceAllItems(assets); 
+        }
+    }
+    App.closeModal();
+}
+
+function sortListByState(array, sortType){
+    if (array && array.length) {       
+        array.sort(function(a,b){
+            if(a.Name < b.Name) return -1;
+            if(a.Name > b.Name) return 1;
+            return 0;
+        });
+
+        switch(sortType){ 
+            case 'state':
+                var oneDay = 1000*60*60*24;
+                var now = moment();                
+                var arrayOnline = [];
+                var arrayOffline = [];
+                for (var i = 0; i < array.length; i++) {
+                    if (POSINFOASSETLIST[array[i].IMEI] && POSINFOASSETLIST[array[i].IMEI].posInfo && POSINFOASSETLIST[array[i].IMEI].posInfo.positionTime) {
+                        var dateDifference = Protocol.Helper.getDifferenceBTtwoDates(POSINFOASSETLIST[array[i].IMEI].posInfo.positionTime, now);
+                        if (dateDifference <= oneDay){
+                            arrayOnline.push(array[i]);
+                        }else{
+                            arrayOffline.push(array[i]);
+                        }                        
+                    }else{
+                        arrayOffline.push(array[i]);
+                    }                    
+                }                
+                array = arrayOnline.concat(arrayOffline);
+
+                break; 
+        }  
+    }    
+    return array;
 }
 
 function getNewNotifications(params){         

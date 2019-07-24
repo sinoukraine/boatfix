@@ -100,7 +100,12 @@ html:not(.watch-active-state) .button.btn_login.button-fill:active{
 	border-color: #0095C2;
     background-color: #0095C2;
 }
-
+label.label-radio input[type=checkbox]:checked+.item-media i.icon-form-radio, label.label-radio input[type=checkbox]:checked~.item-after i.icon-form-radio, label.label-radio input[type=checkbox]:checked~.item-inner i.icon-form-radio, label.label-radio input[type=radio]:checked+.item-media i.icon-form-radio, label.label-radio input[type=radio]:checked~.item-after i.icon-form-radio, label.label-radio input[type=radio]:checked~.item-inner i.icon-form-radio{
+	border-color: #0095C2;
+}
+label.label-radio input[type=checkbox]:checked+.item-media i.icon-form-radio:after, label.label-radio input[type=checkbox]:checked~.item-after i.icon-form-radio:after, label.label-radio input[type=checkbox]:checked~.item-inner i.icon-form-radio:after, label.label-radio input[type=radio]:checked+.item-media i.icon-form-radio:after, label.label-radio input[type=radio]:checked~.item-after i.icon-form-radio:after, label.label-radio input[type=radio]:checked~.item-inner i.icon-form-radio:after{
+	background-color: #0095C2;
+}
 .color-green label.label-radio input[type=checkbox]:checked+.item-media i.icon-form-radio, .color-green label.label-radio input[type=checkbox]:checked~.item-after i.icon-form-radio, .color-green label.label-radio input[type=checkbox]:checked~.item-inner i.icon-form-radio, .color-green label.label-radio input[type=radio]:checked+.item-media i.icon-form-radio, .color-green label.label-radio input[type=radio]:checked~.item-after i.icon-form-radio, .color-green label.label-radio input[type=radio]:checked~.item-inner i.icon-form-radio{
 	border-color: #4caf50;
 }

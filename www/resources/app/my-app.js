@@ -1347,12 +1347,14 @@ App.onPageInit('alarms.select', function (page) {
 	            		</div>`,
 	        buttons: [{
 	                text: LANGUAGE.COM_MSG04,
+	                color: 'gray',
 	                onClick: function() {
 	                  
 	                }
 	            },
 	            {
 	                text: LANGUAGE.COM_MSG38,
+	                color: 'boatwatch',
 	                bold: true,
 	                onClick: function(popup) {	                	
 	                	var radioBilgeIntervalVal = $$(popup).find('[name="radio-bilge-interval"]:checked').val();
@@ -1406,6 +1408,9 @@ App.onPageInit('alarms.select', function (page) {
         $.each(fields, function( index, value ) {            
             data.AlertTypes += parseInt(this.value, 10);            
         }); 
+        if ((data.AlertTypes & 131072) > 0) {
+        	data.InputInterval = 0;
+        }
 
         /*if (speedingInputEl.is(":checked")) {
             data.SpeedingMode = parseInt($$(page.container).find('input[name="overspeed-radio"]:checked').val(),10);
@@ -1916,6 +1921,7 @@ App.onPageInit('asset.alarm', function (page) {
 	            		</div>`,
 	        buttons: [{
 	                text: LANGUAGE.COM_MSG04,
+	                //color: 'gray',
 	                onClick: function() {
 	                  
 	                }
@@ -1923,6 +1929,7 @@ App.onPageInit('asset.alarm', function (page) {
 	            {
 	                text: LANGUAGE.COM_MSG38,
 	                bold: true,
+	                //color: 'boatwatch',
 	                onClick: function(popup) {	                	
 	                	var radioBilgeIntervalVal = $$(popup).find('[name="radio-bilge-interval"]:checked').val();
 	                	if (radioBilgeIntervalVal == '0') {
@@ -1976,7 +1983,10 @@ App.onPageInit('asset.alarm', function (page) {
         $.each(fields, function( index, value ) {            
             data.AlertTypes += parseInt(this.value, 10);            
         }); 
-
+        
+        if ((data.AlertTypes & 131072) > 0) {
+        	data.InputInterval = 0;
+        }
         /*if (allCheckboxes && allCheckboxes.length) {
             for (var i = allCheckboxes.length - 1; i >= 0; i--) {               
                 if (!allCheckboxes[i].checked) {
@@ -2415,6 +2425,7 @@ App.onPageInit('asset.track', function (page) {
     });
 
     trackTimer = setInterval(function(){
+    		console.log('trackTimer');
                 updateMarkerPositionTrack(data);
             }, 10000);  
 
@@ -2464,6 +2475,7 @@ App.onPageInit('asset.track', function (page) {
 
 
 App.onPageBeforeRemove('asset.track', function(page){
+	console.log('here');
     clearInterval(trackTimer);
     trackTimer = false;
 });
@@ -3237,7 +3249,7 @@ function updateGeofenceMarkerGroup(assets, geofenceEdit){
 function updateGeofenceAddress(latlng){
     var container = $$('body');
     if (container.children('.progressbar, .progressbar-infinite').length) return; //don't run all this if there is a current progressbar loading
-    App.showProgressbar(container,'indigo'); 
+    App.showProgressbar(container,'gray'); 
     Protocol.Helper.getAddressByGeocoder(latlng,function(address){
         $$('body [name="geofenceAddress"]').val(address);
         App.hideProgressbar(); 
@@ -3433,7 +3445,7 @@ function changeGeolockState(params){
 
         var container = $$('body');
         if (container.children('.progressbar, .progressbar-infinite').length) return; //don't run all this if there is a current progressbar loading
-        App.showProgressbar(container,'indigo');  
+        App.showProgressbar(container,'gray');  
         JSON1.request(url, function(result){ 
                 console.log(result);                  
                 if (result.MajorCode == '000') {
@@ -4272,7 +4284,7 @@ function updateAssetData(parameters){
 
     var container = $$('body');
     if (container.children('.progressbar, .progressbar-infinite').length) return; //don't run all this if there is a current progressbar loading
-    App.showProgressbar(container,'indigo');
+    App.showProgressbar(container,'gray');
 
     JSON1.request(url, function(result){ 
                                
@@ -4306,6 +4318,7 @@ function updateAssetData(parameters){
 }
 
 function updateMarkerPositionTrack(data){
+	console.log('updateMarkerPositionTrack');
         var asset = POSINFOASSETLIST[TargetAsset.ASSET_IMEI];
         
         if (asset) {
@@ -5021,7 +5034,7 @@ function getNewNotifications(params){
     if (MinorToken && deviceToken) {
         var container = $$('body');
         if (container.children('.progressbar, .progressbar-infinite').length) return; //don't run all this if there is a current progressbar loading
-        App.showProgressbar(container,'indigo'); 
+        App.showProgressbar(container,'gray'); 
 
         var url = API_URL.URL_GET_NEW_NOTIFICATIONS.format(MinorToken,deviceToken); 
         notificationChecked = 0;

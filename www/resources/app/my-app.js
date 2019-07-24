@@ -1347,14 +1347,14 @@ App.onPageInit('alarms.select', function (page) {
 	            		</div>`,
 	        buttons: [{
 	                text: LANGUAGE.COM_MSG04,
-	                color: 'gray',
+	                //color: 'gray',
 	                onClick: function() {
 	                  
 	                }
 	            },
 	            {
 	                text: LANGUAGE.COM_MSG38,
-	                color: 'boatwatch',
+	                //color: 'boatwatch',
 	                bold: true,
 	                onClick: function(popup) {	                	
 	                	var radioBilgeIntervalVal = $$(popup).find('[name="radio-bilge-interval"]:checked').val();
@@ -2425,7 +2425,7 @@ App.onPageInit('asset.track', function (page) {
     });
 
     trackTimer = setInterval(function(){
-    		console.log('trackTimer');
+    		//console.log('trackTimer');
                 updateMarkerPositionTrack(data);
             }, 10000);  
 
@@ -2475,7 +2475,7 @@ App.onPageInit('asset.track', function (page) {
 
 
 App.onPageBeforeRemove('asset.track', function(page){
-	console.log('here');
+	//console.log('here');
     clearInterval(trackTimer);
     trackTimer = false;
 });
@@ -4318,7 +4318,7 @@ function updateAssetData(parameters){
 }
 
 function updateMarkerPositionTrack(data){
-	console.log('updateMarkerPositionTrack');
+	//console.log('updateMarkerPositionTrack');
         var asset = POSINFOASSETLIST[TargetAsset.ASSET_IMEI];
         
         if (asset) {

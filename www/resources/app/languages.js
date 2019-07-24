@@ -44,6 +44,9 @@ window.LanguagePackages= {
 		"COM_MSG41": "Sort List By",
 		"COM_MSG42": "Name",
 		"COM_MSG43": "Status",
+		"COM_MSG44": "min",
+		"COM_MSG45": "Custom",
+		"COM_MSG46": "Settings",
 
 		"PROMPT_MSG001": "Live tracking started",
 		"PROMPT_MSG002": "Live tracking stopped",
@@ -82,6 +85,7 @@ window.LanguagePackages= {
 		"PROMPT_MSG051": "Demo accounts has restricted access",
 		"PROMPT_MSG052": "App can't get phone details for push notifications. Please, logout and login again.",
 		"PROMPT_MSG053": 'This option will be available soon',
+		"PROMPT_MSG054": 'Set alarm interval',
 
 
 		"LOGIN_MSG01": "The login(email) or password you entered is incorrect.",
@@ -143,8 +147,7 @@ window.LanguagePackages= {
 		"ALARM_MSG23": "Speed Alert",
 		"ALARM_MSG24": "Turn on/Turn off all",
 		"ALARM_MSG25": "Outboard Engine Removal",
-		"ALARM_MSG26": "On",
-		"ALARM_MSG27": "Off",
+		"ALARM_MSG26": "Value in minutes",
 
 		"ASSET_STATUS_MSG00": "Date, time",
 		"ASSET_STATUS_MSG01": "Heading",

@@ -1281,6 +1281,7 @@ App.onPageInit('alarms.assets', function (page) {
 });
 
 App.onPageInit('alarms.select', function (page) {
+	var assets = $$(page.container).find('input[name="Assets"]').val();
 
 	var bilgePumpConfigEl = $$(page.container).find('.openBilgePumpConfig');
     bilgePumpConfigEl.on('click', function () {

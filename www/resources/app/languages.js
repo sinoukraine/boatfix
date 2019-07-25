@@ -47,6 +47,7 @@ window.LanguagePackages= {
 		"COM_MSG44": "min",
 		"COM_MSG45": "Custom",
 		"COM_MSG46": "Settings",
+		"COM_MSG47": "mins",
 
 		"PROMPT_MSG001": "Live tracking started",
 		"PROMPT_MSG002": "Live tracking stopped",

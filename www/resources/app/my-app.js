@@ -1308,7 +1308,7 @@ App.onPageInit('alarms.select', function (page) {
 								          	<i class="icon icon-form-radio"></i>
 								        </div>
 								        <div class="item-inner">
-								          	<div class="item-title">2 ${ LANGUAGE.COM_MSG44 }</div>
+								          	<div class="item-title">2 ${ LANGUAGE.COM_MSG47 }</div>
 								        </div>
 								    </label>
 							    </li>
@@ -1319,7 +1319,7 @@ App.onPageInit('alarms.select', function (page) {
 								          	<i class="icon icon-form-radio"></i>
 								        </div>
 								        <div class="item-inner">
-								          	<div class="item-title">5 ${ LANGUAGE.COM_MSG44 }</div>
+								          	<div class="item-title">5 ${ LANGUAGE.COM_MSG47 }</div>
 								        </div>
 								    </label>
 							    </li>
@@ -1409,7 +1409,11 @@ App.onPageInit('alarms.select', function (page) {
             data.AlertTypes += parseInt(this.value, 10);            
         }); 
         if ((data.AlertTypes & 131072) > 0) {
-        	data.InputInterval = 0;
+            data.InputInterval = 0;  //set interval 0 if bilge pump alarm turned off
+        }else{
+            if (data.InputInterval == 0) {
+                data.InputInterval = 5; //set default interval 5 mins if other intervalnot selected
+            }
         }
 
         /*if (speedingInputEl.is(":checked")) {
@@ -1882,7 +1886,7 @@ App.onPageInit('asset.alarm', function (page) {
 								          	<i class="icon icon-form-radio"></i>
 								        </div>
 								        <div class="item-inner">
-								          	<div class="item-title">2 ${ LANGUAGE.COM_MSG44 }</div>
+								          	<div class="item-title">2 ${ LANGUAGE.COM_MSG47 }</div>
 								        </div>
 								    </label>
 							    </li>
@@ -1893,7 +1897,7 @@ App.onPageInit('asset.alarm', function (page) {
 								          	<i class="icon icon-form-radio"></i>
 								        </div>
 								        <div class="item-inner">
-								          	<div class="item-title">5 ${ LANGUAGE.COM_MSG44 }</div>
+								          	<div class="item-title">5 ${ LANGUAGE.COM_MSG47 }</div>
 								        </div>
 								    </label>
 							    </li>
@@ -1985,7 +1989,11 @@ App.onPageInit('asset.alarm', function (page) {
         }); 
         
         if ((data.AlertTypes & 131072) > 0) {
-        	data.InputInterval = 0;
+            data.InputInterval = 0;  //set interval 0 if bilge pump alarm turned off
+        }else{
+            if (data.InputInterval == 0) {
+                data.InputInterval = 5; //set default interval 5 mins if other intervalnot selected
+            }
         }
         /*if (allCheckboxes && allCheckboxes.length) {
             for (var i = allCheckboxes.length - 1; i >= 0; i--) {               

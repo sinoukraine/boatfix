@@ -109,6 +109,9 @@ html:not(.watch-active-state) .button.btn_login.button-fill:active{
 	border-color: #0095C2;
     background-color: #0095C2;
 }
+.form-radio input[type=radio]:checked~i, label.label-radio input[type=checkbox]:checked~.item-inner, label.label-radio input[type=radio]:checked~.item-inner{
+	background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2013%2010'%3E%3Cpolygon%20fill%3D'%230095C2'%20points%3D'11.6%2C0%204.4%2C7.2%201.4%2C4.2%200%2C5.6%204.4%2C10%204.4%2C10%204.4%2C10%2013%2C1.4%20'%2F%3E%3C%2Fsvg%3E");
+}
 
 .color-green label.label-radio input[type=checkbox]:checked+.item-media i.icon-form-radio, .color-green label.label-radio input[type=checkbox]:checked~.item-after i.icon-form-radio, .color-green label.label-radio input[type=checkbox]:checked~.item-inner i.icon-form-radio, .color-green label.label-radio input[type=radio]:checked+.item-media i.icon-form-radio, .color-green label.label-radio input[type=radio]:checked~.item-after i.icon-form-radio, .color-green label.label-radio input[type=radio]:checked~.item-inner i.icon-form-radio{
 	border-color: #4caf50;
@@ -128,6 +131,9 @@ html:not(.watch-active-state) .button.btn_login.button-fill:active{
 }
 .color-gray label.label-radio input[type=checkbox]:checked+.item-media i.icon-form-radio:after, .color-gray label.label-radio input[type=checkbox]:checked~.item-after i.icon-form-radio:after, .color-gray label.label-radio input[type=checkbox]:checked~.item-inner i.icon-form-radio:after, .color-gray label.label-radio input[type=radio]:checked+.item-media i.icon-form-radio:after, .color-gray label.label-radio input[type=radio]:checked~.item-after i.icon-form-radio:after, .color-gray label.label-radio input[type=radio]:checked~.item-inner i.icon-form-radio:after{
 	background-color: #9e9e9e;
+}
+.modal-button{
+	color: #0095C2;
 }
 
 .subnavbar .button.active{

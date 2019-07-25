@@ -1311,7 +1311,7 @@ App.onPageInit('alarms.assets', function (page) {
 
 App.onPageInit('alarms.select', function (page) {
     var assets = $$(page.container).find('input[name="Assets"]').val();
-   
+
     $(page.container).find('input[type="radio"]').checkRadioTweak(); 
 
     var bilgePumpConfigEl = $$(page.container).find('.openBilgePumpConfig');
@@ -1377,6 +1377,7 @@ App.onPageInit('alarms.select', function (page) {
                     bold: true,
                     onClick: function(popup) {                      
                         var radioBilgeIntervalVal = $$(popup).find('[name="radio-bilge-interval"]:checked').val();
+                        console.log(radioBilgeIntervalVal);
                         if (radioBilgeIntervalVal == '0') {
                             page.context.InputInterval = parseInt($$(popup).find('[name="radio-bilge-interval-custom"]').val(),10);
                         }else{
@@ -1411,11 +1412,11 @@ App.onPageInit('alarms.select', function (page) {
             //DateFrom: moment(BeginTimeInput.val(), 'HH:mm').utc().format('HH:mm'),
             //DateTo: moment(EndTimeInput.val(), 'HH:mm').utc().format('HH:mm'),
             AlertTypes: 0,
-            InputInterval: page.context.InputInterval,
+            InputInterval: page.context.InputInterval ? page.context.InputInterval : 0,
             //Weeks: '',
             //IsIgnore: 0,
         };
-
+       
         //if (ignoreBetweenEl.is(":checked")) {
         //    data.IsIgnore = 1;
         //}
@@ -1996,6 +1997,7 @@ App.onPageInit('asset.alarm', function (page) {
                     bold: true,
                     onClick: function(popup) {                      
                         var radioBilgeIntervalVal = $$(popup).find('[name="radio-bilge-interval"]:checked').val();
+
                         if (radioBilgeIntervalVal == '0') {
                             page.context.InputInterval = parseInt($$(popup).find('[name="radio-bilge-interval-custom"]').val(),10);
                         }else{
@@ -2030,7 +2032,7 @@ App.onPageInit('asset.alarm', function (page) {
             //DateFrom: moment(BeginTimeInput.val(), 'HH:mm').utc().format('HH:mm'),
             //DateTo: moment(EndTimeInput.val(), 'HH:mm').utc().format('HH:mm'),
             AlertTypes: 0,
-            InputInterval: page.context.InputInterval,
+            InputInterval: page.context.InputInterval ? page.context.InputInterval : 0,
             //Weeks: '',
             //IsIgnore: 0,
         };

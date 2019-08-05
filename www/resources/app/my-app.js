@@ -2171,8 +2171,7 @@ App.onPageInit('asset.alarm', function (page) {
 });
 
 
-App.onPageInit('asset.playback', function (page) { 
- 
+App.onPageInit('asset.playback', function (page) {
 	window.MONTHS = [LANGUAGE.ASSET_PLAYBACK_MSG12,LANGUAGE.ASSET_PLAYBACK_MSG13,LANGUAGE.ASSET_PLAYBACK_MSG14,LANGUAGE.ASSET_PLAYBACK_MSG15,LANGUAGE.ASSET_PLAYBACK_MSG16,LANGUAGE.ASSET_PLAYBACK_MSG17,LANGUAGE.ASSET_PLAYBACK_MSG18,LANGUAGE.ASSET_PLAYBACK_MSG19,LANGUAGE.ASSET_PLAYBACK_MSG20,LANGUAGE.ASSET_PLAYBACK_MSG21,LANGUAGE.ASSET_PLAYBACK_MSG22,LANGUAGE.ASSET_PLAYBACK_MSG23];
 	
     var playbackListSettings = $$(page.container).find('.list-playback-settings'); 
@@ -2183,11 +2182,11 @@ App.onPageInit('asset.playback', function (page) {
         input: '.picker-start-date',
         cssClass: 'custom-picker custom-date',
         //toolbarCloseText: '',
-        toolbarTemplate:'<div class="toolbar">'+
+        toolbarTemplate:'<div class="toolbar">'+ 
                           '<div class="toolbar-inner">'+
                             '<div class="left"><div class="text">'+LANGUAGE.ASSET_PLAYBACK_MSG04+'</div></div>'+
                             '<div class="right">'+
-                              '<a href="#" class="link close-picker color-white">{{closeText}}</a>'+
+                              '<a href="#" class="link close-picker color-black">{{closeText}}</a>'+
                             '</div>'+
                           '</div>'+
                         '</div>',
@@ -2202,9 +2201,14 @@ App.onPageInit('asset.playback', function (page) {
         },
      
         formatValue: function (p, values, displayValues) {
-            if (Array.isArray(displayValues) && displayValues.length === 0) {
+            //console.log(displayValues);
+			if (Array.isArray(displayValues) && displayValues.length === 0) {
                 displayValues[0] = moment(yesterday).format('MMMM');          
             }
+			else if(parseInt(displayValues[0]) >= 0){
+            	displayValues[0] = MONTHS[parseInt(displayValues[0])];
+            }
+			/*let monthArray = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];*/
             return displayValues[0] + ' ' + values[1] + ', ' + values[2];
         },
      
@@ -2212,8 +2216,9 @@ App.onPageInit('asset.playback', function (page) {
             // Months
             {
                 values: ('0 1 2 3 4 5 6 7 8 9 10 11').split(' '),
+				//values: ('Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec').split(' '),
                 //displayValues: ('January February March April May June July August September October November December').split(' '),
-                displayValues: [LANGUAGE.ASSET_PLAYBACK_MSG12,LANGUAGE.ASSET_PLAYBACK_MSG13,LANGUAGE.ASSET_PLAYBACK_MSG14,LANGUAGE.ASSET_PLAYBACK_MSG15,LANGUAGE.ASSET_PLAYBACK_MSG16,LANGUAGE.ASSET_PLAYBACK_MSG17,LANGUAGE.ASSET_PLAYBACK_MSG18,LANGUAGE.ASSET_PLAYBACK_MSG19,LANGUAGE.ASSET_PLAYBACK_MSG20,LANGUAGE.ASSET_PLAYBACK_MSG21,LANGUAGE.ASSET_PLAYBACK_MSG22,LANGUAGE.ASSET_PLAYBACK_MSG23],
+                displayValues: MONTHS,
                 textAlign: 'left'
             },
             // Days
@@ -2244,7 +2249,7 @@ App.onPageInit('asset.playback', function (page) {
                           '<div class="toolbar-inner">'+
                             '<div class="left"><div class="text">'+LANGUAGE.ASSET_PLAYBACK_MSG05+'</div></div>'+
                             '<div class="right">'+
-                              '<a href="#" class="link close-picker color-white">{{closeText}}</a>'+
+                              '<a href="#" class="link close-picker color-black">{{closeText}}</a>'+
                             '</div>'+
                           '</div>'+
                         '</div>',
@@ -2294,7 +2299,7 @@ App.onPageInit('asset.playback', function (page) {
                           '<div class="toolbar-inner">'+
                             '<div class="left"><div class="text">'+LANGUAGE.ASSET_PLAYBACK_MSG06+'</div></div>'+
                             '<div class="right">'+
-                              '<a href="#" class="link close-picker color-white">{{closeText}}</a>'+
+                              '<a href="#" class="link close-picker color-black">{{closeText}}</a>'+
                             '</div>'+
                           '</div>'+
                         '</div>',
@@ -2312,6 +2317,9 @@ App.onPageInit('asset.playback', function (page) {
             if (Array.isArray(displayValues) && displayValues.length === 0) {
                 displayValues[0] = moment().format('MMMM');
             }
+			else if(parseInt(displayValues[0]) >= 0){
+            	displayValues[0] = MONTHS[parseInt(displayValues[0])];
+            }
             return displayValues[0] + ' ' + values[1] + ', ' + values[2];
         },
      
@@ -2319,7 +2327,7 @@ App.onPageInit('asset.playback', function (page) {
             // Months
             {
                 values: ('0 1 2 3 4 5 6 7 8 9 10 11').split(' '),
-                displayValues: [LANGUAGE.ASSET_PLAYBACK_MSG12,LANGUAGE.ASSET_PLAYBACK_MSG13,LANGUAGE.ASSET_PLAYBACK_MSG14,LANGUAGE.ASSET_PLAYBACK_MSG15,LANGUAGE.ASSET_PLAYBACK_MSG16,LANGUAGE.ASSET_PLAYBACK_MSG17,LANGUAGE.ASSET_PLAYBACK_MSG18,LANGUAGE.ASSET_PLAYBACK_MSG19,LANGUAGE.ASSET_PLAYBACK_MSG20,LANGUAGE.ASSET_PLAYBACK_MSG21,LANGUAGE.ASSET_PLAYBACK_MSG22,LANGUAGE.ASSET_PLAYBACK_MSG23],
+                displayValues: MONTHS,
                 textAlign: 'left'
             },
             // Days
@@ -2350,7 +2358,7 @@ App.onPageInit('asset.playback', function (page) {
                           '<div class="toolbar-inner">'+
                             '<div class="left"><div class="text">'+LANGUAGE.ASSET_PLAYBACK_MSG07+'</div></div>'+
                             '<div class="right">'+
-                              '<a href="#" class="link close-picker color-white">{{closeText}}</a>'+
+                              '<a href="#" class="link close-picker color-black">{{closeText}}</a>'+
                             '</div>'+
                           '</div>'+
                         '</div>',
@@ -2432,7 +2440,7 @@ App.onPageInit('asset.playback', function (page) {
             }
             
         }
-    });                             
+    });                               
  
 });
 

@@ -2378,7 +2378,8 @@ App.onPageInit('asset.playback', function (page) {
             }
             
         }
-    });   
+    });                          
+ 
 });
 
 App.onPageBeforeRemove('asset.playback', function(page){

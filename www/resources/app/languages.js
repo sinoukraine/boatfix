@@ -618,7 +618,7 @@ window.LanguagePackages= {
 		"NOTIFICATION_MSG00": "Notificaciones",
 		"NOTIFICATION_MSG01": "Ubicación",
 	},
-	/*"ru":{
+	/*""ru":{
 		"COM_MSG00": "Сохранить",
 		"COM_MSG02": "Ошибка подключения к сети",
 		"COM_MSG03": "Запрос обрабатывается",

@@ -192,6 +192,9 @@ html:not(.watch-active-state) .button.btn_login.button-fill:active{
 .width-auto{
 	width: auto !important;
 }
+.fs-15{
+	font-size: 15px !important;
+}
 .fs-16{
 	font-size: 16px !important;
 }

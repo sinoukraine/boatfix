@@ -1266,7 +1266,8 @@ App.onPageInit('alarms.assets', function (page) {
             mainView.router.load({
                 url:'resources/templates/alarms.select.html',
                 context:{
-                    Assets: assets.toString()
+                    Assets: assets.toString(),
+                    InputInterval: 5, 
                 }
             }); 
         }else{
@@ -2187,7 +2188,7 @@ App.onPageInit('asset.playback', function (page) {
                           '<div class="toolbar-inner">'+
                             '<div class="left"><div class="text">'+LANGUAGE.ASSET_PLAYBACK_MSG05+'</div></div>'+
                             '<div class="right">'+
-                              '<a href="#" class="link close-picker color-black">{{closeText}}</a>'+
+                              '<a href="#" class="link close-picker color-white">{{closeText}}</a>'+
                             '</div>'+
                           '</div>'+
                         '</div>',
@@ -2296,7 +2297,7 @@ App.onPageInit('asset.playback', function (page) {
                           '<div class="toolbar-inner">'+
                             '<div class="left"><div class="text">'+LANGUAGE.ASSET_PLAYBACK_MSG07+'</div></div>'+
                             '<div class="right">'+
-                              '<a href="#" class="link close-picker color-black">{{closeText}}</a>'+
+                              '<a href="#" class="link close-picker color-white">{{closeText}}</a>'+
                             '</div>'+
                           '</div>'+
                         '</div>',
@@ -3788,7 +3789,7 @@ function loadAlarmPage(params){
             offline48: offlineOptions['48'],
             offline72: offlineOptions['72'], */   
 
-            InputInterval: params.InputInterval ? params.InputInterval : 0,   
+            InputInterval: params.InputInterval ? params.InputInterval : 5,   
         }
     });
 }

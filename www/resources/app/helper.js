@@ -298,7 +298,7 @@ Protocol = {
             return ret;
         },
         getAddressByGeocoder: function(latlng,replyFunc){
-            /*var url = "http://map.quiktrak.co/reverse.php?format=json&lat={0}&lon={1}&zoom=18&addressdetails=1".format(latlng.lat, latlng.lng);
+            /*var url = "https://map.quiktrak.co/reverse.php?format=json&lat={0}&lon={1}&zoom=18&addressdetails=1".format(latlng.lat, latlng.lng);
             JSON1.request(url, function(result){ replyFunc(result.display_name);});*/
             var coords = latlng.lat + ', ' + latlng.lng;
             $.ajax({

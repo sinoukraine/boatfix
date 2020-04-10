@@ -389,16 +389,16 @@ Protocol = {
         },    
         createMap: function(option){
             var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { name: 'osm', attribution: '' });            
-            var googleStreets = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{
+            var googleStreets = L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{
                 maxZoom: 22,
                 subdomains:['mt0','mt1','mt2','mt3']
             });           
-            var googleSatelitte = L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}',{
+            var googleSatelitte = L.tileLayer('https://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}',{
                 maxZoom: 20,
                 subdomains:['mt0','mt1','mt2','mt3']
             });  
 
-            var layerSeaMark = L.tileLayer( "http://tiles.openseamap.org/seamark/{z}/{x}/{y}.png", { numZoomLevels: 18, isBaseLayer:false, displayOutsideMaxExtent:true });           
+            var layerSeaMark = L.tileLayer( "https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png", { numZoomLevels: 18, isBaseLayer:false, displayOutsideMaxExtent:true });
               
             var layerGrid2 = L.latlngGraticule({
                 showLabel: true,

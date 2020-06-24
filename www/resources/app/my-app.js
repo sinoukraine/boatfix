@@ -2117,6 +2117,7 @@ App.onPageBeforeRemove('asset.alarm', function () {
 })*/
 
 
+
 App.onPageInit('asset.playback', function (page) {
 	window.MONTHS = [LANGUAGE.ASSET_PLAYBACK_MSG12,LANGUAGE.ASSET_PLAYBACK_MSG13,LANGUAGE.ASSET_PLAYBACK_MSG14,LANGUAGE.ASSET_PLAYBACK_MSG15,LANGUAGE.ASSET_PLAYBACK_MSG16,LANGUAGE.ASSET_PLAYBACK_MSG17,LANGUAGE.ASSET_PLAYBACK_MSG18,LANGUAGE.ASSET_PLAYBACK_MSG19,LANGUAGE.ASSET_PLAYBACK_MSG20,LANGUAGE.ASSET_PLAYBACK_MSG21,LANGUAGE.ASSET_PLAYBACK_MSG22,LANGUAGE.ASSET_PLAYBACK_MSG23];
 	
@@ -2696,7 +2697,8 @@ function clearUserInfo(){
 
 function logout(){  
     clearUserInfo();
-    App.loginScreen();   
+    App.loginScreen();
+    $$('txr-sms-chat').hide();
 }
 
 function preLogin(){
@@ -2778,11 +2780,18 @@ function login(){
 }
 
 function fillInHelpTextBox(data) {
-    let page = $('txr-sms-chat')[0].shadow;
+    $$('txr-sms-chat').show();
+    /*let page = $('txr-sms-chat')[0].shadow;
     let $page = $(page);
-    $page.find('[name="textName"]').val(data.FirstName + ' ' + data.SubName);
-    $page.find('[name="mobilePhone"]').val(data.Mobile ? data.Mobile : data.Phone );
-    $page.find('[placeholder="Login Name"]').val(localStorage.ACCOUNT);
+
+
+    $page.find('.sms-chat__button').on('click', function () {
+        if(!$('txr-sms-chat').hasClass('opened')){
+            $page.find('[name="textName"]').val(data.FirstName + ' ' + data.SubName).change();
+            $page.find('[name="mobilePhone"]').val(data.Mobile ? data.Mobile : data.Phone ).focus().blur();
+            $page.find('[placeholder="Login Name"]').val(localStorage.ACCOUNT);
+        }
+    })*/
 }
 
 function refreshToken(newDeviceToken){

@@ -2108,13 +2108,13 @@ App.onPageInit('asset.alarm', function (page) {
         
     });*/
 
-    $$('txr-sms-chat').show();
+
         
 });
-
+/*
 App.onPageBeforeRemove('asset.alarm', function () {
     $$('txr-sms-chat').hide();
-})
+})*/
 
 
 App.onPageInit('asset.playback', function (page) {
@@ -2386,13 +2386,15 @@ App.onPageInit('asset.playback', function (page) {
             }
             
         }
-    });                          
+    });
+    //$$('txr-sms-chat').hide();
  
 });
 
 App.onPageBeforeRemove('asset.playback', function(page){
     // fix to close modal calendar if it was opened and default back button pressed
     App.closeModal('.custom-picker');
+    //$$('txr-sms-chat').show();
 });
 
 App.onPageInit('asset.location', function (page) { 
@@ -2412,6 +2414,10 @@ App.onPageInit('asset.location', function (page) {
         };
         showStreetView(params);        
     });
+    $$('txr-sms-chat').hide();
+});
+App.onPageBeforeRemove('asset.location', function(page){
+    $$('txr-sms-chat').show();
 });
 
 App.onPageInit('asset.track', function (page) {     
@@ -2497,7 +2503,7 @@ App.onPageInit('asset.track', function (page) {
             window.PosMarker[TargetAsset.ASSET_IMEI+'-geofence'] = false;
         }
     });
-
+    $$('txr-sms-chat').hide();
 });
 
 
@@ -2506,6 +2512,7 @@ App.onPageBeforeRemove('asset.track', function(page){
 	//console.log('here');
     clearInterval(trackTimer);
     trackTimer = false;
+    $$('txr-sms-chat').show();
 });
 
 App.onPageInit('asset.playback.show', function (page) {
@@ -2628,7 +2635,7 @@ App.onPageInit('asset.playback.show', function (page) {
         panoButton.data('lng',params.lng);
         StreetViewService.getPanorama({location:new google.maps.LatLng(params.lat,params. lng), radius: 50}, processSVData);
     }
-  
+    $$('txr-sms-chat').hide();
 });
 
 App.onPageBeforeRemove('asset.playback.show', function(page){
@@ -2636,6 +2643,7 @@ App.onPageBeforeRemove('asset.playback.show', function(page){
     playbackTimer = false;
     HistoryArray = [];
     EventsArray = [];
+    $$('txr-sms-chat').show();
 });
 
 

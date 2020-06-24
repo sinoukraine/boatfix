@@ -223,6 +223,7 @@ var App = new Framework7({
     modalTitle: 'Boat Fix',
     precompileTemplates: true,
     template7Pages: true,
+    fastClicks: false,
     onAjaxStart: function(xhr){
         App.showIndicator();
     },

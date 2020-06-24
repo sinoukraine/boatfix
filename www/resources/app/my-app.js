@@ -2763,7 +2763,8 @@ function login(){
                 //init_AssetList(); 
                 //initSearchbar();
                 
-                getNewNotifications();  
+                getNewNotifications();
+                fillInHelpTextBox(result.Data.User);
                 App.closeModal();                
             }else{                
                 App.alert(LANGUAGE.LOGIN_MSG01);
@@ -2774,6 +2775,14 @@ function login(){
         function(){ App.hidePreloader(); App.alert(LANGUAGE.COM_MSG02); App.loginScreen();}
     ); 
    
+}
+
+function fillInHelpTextBox(data) {
+    let page = $('txr-sms-chat')[0].shadow;
+    let $page = $(page);
+    $page.find('[name="textName"]').val(data.FirstName + ' ' + data.SubName);
+    $page.find('[name="mobilePhone"]').val(data.Mobile ? data.Mobile : data.Phone );
+    $page.find('[placeholder="Login Name"]').val(localStorage.ACCOUNT);
 }
 
 function refreshToken(newDeviceToken){

@@ -4,6 +4,7 @@ window.COM_TIMEFORMAT = 'YYYY-MM-DD HH:mm:ss';
 window.COM_TIMEFORMAT2 = 'YYYY-MM-DDTHH:mm:ss';
 window.COM_TIMEFORMAT3 = 'YYYY-MM-DDTHH:MM';
 UTCOFFSET = moment().utcOffset();
+
 function setUserinfo(user){localStorage.setItem("COM.QUIKTRAK.LIVE.USERINFO", JSON.stringify(user));}
 function getUserinfo(){var ret = {};var str = localStorage.getItem("COM.QUIKTRAK.LIVE.USERINFO");if(str) {ret = JSON.parse(str);} return ret;}
 function isJsonString(str){try{var ret=JSON.parse(str);}catch(e){return false;}return ret;}
@@ -34,8 +35,8 @@ function getPlusInfo(){
             if(!localStorage.PUSH_DEVICE_TOKEN)
             localStorage.PUSH_DEVICE_TOKEN = uid;
             //localStorage.PUSH_DEVICE_TOKEN = "75ba1639-92ae-0c4c-d423-4fad1e48a49d"
-        localStorage.PUSH_APPID_ID = 'ios.app.quiktrak.eu.boatfix';
-        localStorage.DEVICE_TYPE = "ios.app.quiktrak.eu.boatfix";
+        localStorage.PUSH_APPID_ID = 'webapp';
+        localStorage.DEVICE_TYPE = "web";
     }
 }
 
@@ -55,9 +56,6 @@ if( navigator.userAgent.match(/Windows/i) ){
 document.addEventListener("deviceready", onDeviceReady, false );
 
 function onDeviceReady(){
-    if (cordova && cordova.InAppBrowser) {
-        window.open = cordova.InAppBrowser.open;
-    }
     //fix app images and text size
     if (window.MobileAccessibility) {
         window.MobileAccessibility.usePreferredTextZoom(false);
@@ -216,14 +214,13 @@ function backFix(event){
 
 // Initialize your app
 var App = new Framework7({
-    animateNavBackIcon: true,
-    swipeBackPage: false,
-    //pushState: true,
     swipePanel: 'left',
+    swipeBackPage: false,
+    material: true,
+    //pushState: true,
     allowDuplicateUrls: true,
     sortable: false,
     modalTitle: 'Boat Fix',
-    notificationTitle: 'Boat Fix',
     precompileTemplates: true,
     template7Pages: true,
     fastClicks: false,
@@ -241,7 +238,6 @@ var $$ = Dom7;
 // Add view
 var mainView = App.addView('.view-main', {
     domCache: true,
-    dynamicNavbar: true,
     swipeBackPage: false
 });
 
@@ -251,6 +247,7 @@ var StreetViewService = null;
 var TargetAsset = {};
 var searchbar = null;
 var searchbarGeofence = null;
+var searchbarContacts = null;
 var virtualAssetList = null;
 var updateAssetsPosInfoTimer = false;
 var trackTimer = false;
@@ -285,6 +282,7 @@ API_URL.URL_SET_ALARM = API_DOMIAN1 + "Device/AlarmOptions2?MinorToken={0}&imei=
 API_URL.URL_SET_ALERT_CONFIG = API_DOMIAN1 + "Device/AlertConfigureEdit";
 API_URL.URL_GET_ALERT_CONFIG = API_DOMIAN1 + "Device/GetAlertConfigure";
 
+
 API_URL.URL_SET_GEOLOCK_ON = API_DOMIAN1 + "Device/Lock?MajorToken={0}&MinorToken={1}&code={2}&radius=100";
 API_URL.URL_SET_GEOLOCK_OFF = API_DOMIAN1 + "Device/Unlock?MajorToken={0}&MinorToken={1}&code={2}";
 API_URL.URL_SET_IMMOBILISATION = API_DOMIAN4 + "asset/Relay?MajorToken={0}&MinorToken={1}&code={2}&state={3}";
@@ -308,21 +306,32 @@ API_URL.URL_GET_GEOFENCE_ASSET_LIST = API_DOMIAN1 + "Device/GetFenceAssetList";
 API_URL.URL_PHOTO_UPLOAD = "https://upload.quiktrak.co/image/Upload";
 API_URL.URL_SUPPORT = "https://support.quiktrak.eu/?name={0}&loginName={1}&email={2}&phone={3}&s={4}";
 
-//API_URL.URL_ROUTE = "https://www.google.com/maps/dir/?api=1&destination={0},{1}"; //&travelmode=walking
-API_URL.URL_ROUTE = "maps://maps.apple.com/maps?daddr={0},{1}"; // ios link
+API_URL.URL_ROUTE = "https://www.google.com/maps/dir/?api=1&destination={0},{1}"; //&travelmode=walking
 API_URL.URL_REFRESH_TOKEN = API_DOMIAN1 + "User/RefreshToken";
+
+
+API_URL.GET_CONTACT_USERS_LIST = API_DOMIAN1 + "User/GetList";
+API_URL.CONTACT_USER_ADD = API_DOMIAN1 + "User/Add";
+API_URL.CONTACT_USER_EDIT = API_DOMIAN1 + "User/Edit";
+API_URL.CONTACT_USER_DELETE = API_DOMIAN1 + "User/Delete";
+
+API_URL.GET_AUTOMATED_REPORT_LIST = API_DOMIAN1 + "Device/GetLogBookList";
+API_URL.AUTOMATED_REPORT_EDIT = API_DOMIAN1 + "Device/UpdateLogBook";
+API_URL.AUTOMATED_REPORT_DELETE = API_DOMIAN1 + "Device/DeleteLogBook";
+
+//Device/V1/Quiktrak/UpdateLogBook
+//Device/V1/Quiktrak/DeleteLogBook
+//Device/V1/Quiktrak/GetLogBookList
 
 var cameraButtons = [
     {
         text: 'Take picture',
-        color: 'boatwatch',
         onClick: function () {
             getImage(1);
         }
     },
     {
         text: 'From gallery',
-        color: 'boatwatch',
         onClick: function () {
             getImage(0);
         }
@@ -342,12 +351,8 @@ var html = Template7.templates.template_Login_Screen();
 $$(document.body).append(html);
 html = Template7.templates.template_Popover_Menu();
 $$(document.body).append(html);
-/*html = Template7.templates.template_AssetList();
-$$('.navbar-fixed').append(html);*/
-$$('.index-title').html(LANGUAGE.MENU_MSG00);
-$$('.index-search-input').attr('placeholder',LANGUAGE.COM_MSG06);
-$$('.index-search-cancel').html(LANGUAGE.COM_MSG04);
-$$('.index-search-nothing-found').html(LANGUAGE.COM_MSG05);
+html = Template7.templates.template_AssetList();
+$$('.navbar-fixed').append(html);
 
 
 if (inBrowser) {
@@ -382,7 +387,7 @@ var virtualAssetList = App.virtualList('.assets_list', {
 
             height = 127;
         }*/
-        var height = 79;
+        var height = 88;
         return height; //display the image with 50px height
     },
     // Display the each item using Template7 template parameter
@@ -514,10 +519,9 @@ $$('body').on('click', '.sorting_button', function(e){
                       '<div class="popover-inner">'+
                         '<div class="list-block">'+
                           '<ul>'+
-
-                          '<li class="color-gray list-button-label">'+LANGUAGE.COM_MSG41+'</li>'+
-                          '<li><a href="#" class="item-link list-button color-boatwatch" onClick="sortAssetList(this);" data-sort-by="name" >'+LANGUAGE.COM_MSG42+'</a></li>'+
-                          '<li><a href="#" class="item-link list-button color-boatwatch" onClick="sortAssetList(this);" data-sort-by="state" >'+LANGUAGE.COM_MSG43+'</a></li>'+
+                          '<li><a href="#" class="item-divider">'+LANGUAGE.COM_MSG41+'</a></li>'+
+                          '<li><a href="#" class="item-link list-button" onClick="sortAssetList(this);" data-sort-by="name" >'+LANGUAGE.COM_MSG42+'</a></li>'+
+                          '<li><a href="#" class="item-link list-button" onClick="sortAssetList(this);" data-sort-by="state" >'+LANGUAGE.COM_MSG43+'</a></li>'+
                           '</ul>'+
                         '</div>'+
                       '</div>'+
@@ -525,16 +529,17 @@ $$('body').on('click', '.sorting_button', function(e){
     App.popover(popoverHTML, clickedLink);
 });
 
+
+
 $$('body').on('click', 'a.external', function(event) {
     event.preventDefault();
     var href = this.getAttribute('href');
     if (href) {
-        /*if (typeof navigator !== "undefined" && navigator.app) {
+        if (typeof navigator !== "undefined" && navigator.app) {
             navigator.app.loadUrl(href, {openExternal: true});
         } else {
             window.open(href,'_blank');
-        }*/
-        window.open(encodeURI(href), '_blank', 'location=yes');
+        }
     }
     return false;
 });
@@ -563,6 +568,12 @@ $$('#menu li').on('click', function () {
             /*}*/
 
             break;
+        case 'menuAReports':
+            loadAutomatedReportsPage();
+            break;
+        case 'menuContacts':
+            loadContactsPage();
+            break;
         case 'menuAlarms':
             if ( typeof(activePage) == 'undefined' || (activePage && activePage.name != "alarms.assets")) {
                 loadAlarmsAssetsPage();
@@ -572,12 +583,9 @@ $$('#menu li').on('click', function () {
             loadPageSupport();
             break;  */
         case 'menuUserManual':
-            /*showCustomMessage({
-                title: LANGUAGE.MENU_MSG12,
-                text: LANGUAGE.PROMPT_MSG053,
-            });*/
             showUserGuide();
             break;
+
         case 'menuLogout':
             App.confirm(LANGUAGE.PROMPT_MSG012, LANGUAGE.MENU_MSG04, function () {
                 logout();
@@ -586,8 +594,6 @@ $$('#menu li').on('click', function () {
 
     }
 });
-
-
 
 /*$$('body').on('click', '.navbar_title, .navbar_title_index', function(){
     var json = '{"title":"GEOLOCK WARNING","type":1024,"imei":"0000001700091735","name":"0000001700091735","lat":43.895091666666666,"lng":125.29207,"speed":0,"direct":0,"time":"2018-08-23 16:56:36"}';
@@ -600,7 +606,7 @@ $$(document).on('click', 'a.tab-link', function(e){
     e.preventDefault();
     var currentPage = App.getCurrentView().activePage.name;
     var page = $$(this).data('id');
-    $$('txr-sms-chat').show();
+
     if (currentPage != page) {
         switch (page){
             case 'asset.status':
@@ -610,7 +616,6 @@ $$(document).on('click', 'a.tab-link', function(e){
                 loadPlaybackPage();
                 break;
             case 'asset.track':
-                $$('txr-sms-chat').hide();
                 loadTrackPage();
                 break;
             case 'asset.alarm':
@@ -848,7 +853,7 @@ App.onPageInit('asset.status', function (page) {
 
     var clickedLink = '';
     var popoverHTML = '';
-/*
+
     $$(page.container).find('.open-gsm').on('click', function () {
         clickedLink = this;
         popoverHTML = '<div class="popover popover-status">'+
@@ -952,7 +957,7 @@ App.onPageInit('asset.status', function (page) {
             clickedLink = this;
             popoverHTML = '<div class="popover popover-status">'+
                           '<p class="color-boatwatch">'+LANGUAGE.ASSET_STATUS_MSG15+' - '+Temperature.text()+'</p>'+
-                          /!*'<p>'+LANGUAGE.ASSET_STATUS_MSG32+'</p>'+        *!/
+                          /*'<p>'+LANGUAGE.ASSET_STATUS_MSG32+'</p>'+        */
                     '</div>';
             App.popover(popoverHTML, clickedLink);
         });
@@ -963,7 +968,7 @@ App.onPageInit('asset.status', function (page) {
             clickedLink = this;
             popoverHTML = '<div class="popover popover-status">'+
                           '<p class="color-boatwatch">'+LANGUAGE.ASSET_STATUS_MSG38+' - '+EngineHours.text()+'</p>'+
-                          /!*'<p>'+LANGUAGE.ASSET_STATUS_MSG33+'</p>'+         *!/
+                          /*'<p>'+LANGUAGE.ASSET_STATUS_MSG33+'</p>'+         */
                     '</div>';
             App.popover(popoverHTML, clickedLink);
         });
@@ -973,11 +978,11 @@ App.onPageInit('asset.status', function (page) {
             clickedLink = this;
             popoverHTML = '<div class="popover popover-status">'+
                           '<p class="color-boatwatch">'+LANGUAGE.ASSET_STATUS_MSG39+' - '+StoppedDuration.text()+'</p>'+
-                          /!*'<p>'+LANGUAGE.ASSET_STATUS_MSG37+'</p>'+   *!/
+                          /*'<p>'+LANGUAGE.ASSET_STATUS_MSG37+'</p>'+   */
                     '</div>';
             App.popover(popoverHTML, clickedLink);
         });
-    } */
+    }
 
 
     $$('.buttonAssetEdit').on('click', function(){
@@ -1182,7 +1187,7 @@ App.onPageInit('alarms.assets', function (page) {
 
     var virtualAlarmsAssetsList = App.virtualList('.alarmsAssetList', {
         items: newAssetlist,
-        height: 44,
+        height: 88,
         searchAll: function (query, items) {
             var foundItems = [];
             for (var i = 0; i < items.length; i++) {
@@ -1204,23 +1209,9 @@ App.onPageInit('alarms.assets', function (page) {
         },*/
         renderItem: function (index, item) {
             var ret = '';
-            //var assetImg = getAssetImg(item, {'assetList':true});
+            var assetImg = getAssetImg(item, {'assetList':true});
 
             ret +=  '<li data-index="'+index+'">';
-            ret +=      '<label class="label-checkbox item-content">';
-                 if (item.Selected) {
-                    ret +=          '<input type="checkbox" name="alarms-assets" value="" data-id="' + item.Id + '" data-imei="' + item.IMEI + '" checked="true" >';
-                }else{
-                    ret +=          '<input type="checkbox" name="alarms-assets" value="" data-id="' + item.Id + '" data-imei="' + item.IMEI + '" >';
-                }
-            ret +=          '<div class="item-media"><i class="icon icon-form-checkbox"></i></div>';
-            ret +=          '<div class="item-inner">';
-            ret +=              '<div class="item-title">' + item.Name + '</div>';
-            ret +=          '</div>';
-            ret +=      '</label>';
-            ret +=  '</li>';
-
-            /*ret +=  '<li data-index="'+index+'">';
             ret +=      '<label class="label-checkbox item-content no-fastclick">';
                  if (item.Selected) {
                     ret +=          '<input type="checkbox" name="alarms-assets" value="" data-id="' + item.Id + '" data-imei="' + item.IMEI + '" checked="true" >';
@@ -1238,7 +1229,7 @@ App.onPageInit('alarms.assets', function (page) {
             ret +=              '</div>';
             ret +=          '</div>';
             ret +=      '</label>';
-            ret +=  '</li>';*/
+            ret +=  '</li>';
 
             return  ret;
         }
@@ -1313,95 +1304,104 @@ App.onPageInit('alarms.assets', function (page) {
 });
 
 App.onPageInit('alarms.select', function (page) {
-    var assets = $$(page.container).find('input[name="Assets"]').val();
+	var assets = $$(page.container).find('input[name="Assets"]').val();
 
-    $(page.container).find('input[type="radio"]').checkRadioTweak();
-
-    var bilgePumpConfigEl = $$(page.container).find('.openBilgePumpConfig');
+	var bilgePumpConfigEl = $$(page.container).find('.openBilgePumpConfig');
     bilgePumpConfigEl.on('click', function () {
         var modal = App.modal({
-            title: LANGUAGE.ALARM_MSG02,
-            text: '<div class="custom-modal-text">' + LANGUAGE.PROMPT_MSG054 + '</div>',
-            afterText:  `<div class="list-block list-block-modal  no-hairlines modal-checkbox">
-                            <ul>                            
-                                <li>
-                                    <label class="label-radio item-content">                                        
-                                        <input type="radio" name="radio-bilge-interval" value="1" ${ page.context.InputInterval == 1 ? 'checked="checked"' : ''} >                                        
-                                        <div class="item-inner">
-                                            <div class="item-title">1 ${ LANGUAGE.COM_MSG44 }</div>
-                                        </div>
-                                    </label>
-                                </li>
-                                <li>
-                                    <label class="label-radio item-content">                                        
-                                        <input type="radio" name="radio-bilge-interval" value="2" ${ page.context.InputInterval == 2 ? 'checked="checked"' : ''}>                                        
-                                        <div class="item-inner">
-                                            <div class="item-title">2 ${ LANGUAGE.COM_MSG47 }</div>
-                                        </div>
-                                    </label>
-                                </li>
-                                <li>
-                                    <label class="label-radio item-content">                                        
-                                        <input type="radio" name="radio-bilge-interval" value="5" ${ page.context.InputInterval == 5 ? 'checked="checked"' : ''}>                                        
-                                        <div class="item-inner">
-                                            <div class="item-title">5 ${ LANGUAGE.COM_MSG47 }</div>
-                                        </div>
-                                    </label>
-                                </li>
-                                <li>
-                                    <label class="label-radio item-content">                                        
-                                        <input type="radio" name="radio-bilge-interval" value="0" ${ page.context.InputInterval != 5 && page.context.InputInterval != 2 && page.context.InputInterval != 1 ? 'checked="checked"' : ''}>                                        
-                                        <div class="item-inner">
-                                            <div class="item-title">${ LANGUAGE.COM_MSG45 }</div>
-                                        </div>
-                                    </label>
-                                </li>
-                                <li class="custom-interval-wrapper ${ page.context.InputInterval == 5 || page.context.InputInterval == 2 || page.context.InputInterval == 1 ? 'disabled' : ''} ">
-                                    <div class="item-content">
-                                        <div class="item-inner">
-                                            <div class="item-input">
-                                                <input type="tel" name="radio-bilge-interval-custom" class="only_numbers" maxlength="5" placeholder="${ LANGUAGE.ALARM_MSG26 }" value="${ page.context.InputInterval && page.context.InputInterval != 5 && page.context.InputInterval != 2 && page.context.InputInterval != 1 ? page.context.InputInterval : '' }">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </li>                               
-                            </ul>
-                        </div>`,
-            buttons: [{
-                    text: LANGUAGE.COM_MSG04,
-                    //color: 'gray',
-                    onClick: function() {
+	        title: LANGUAGE.ALARM_MSG02,
+	        text: '<div class="custom-modal-text">' + LANGUAGE.PROMPT_MSG054 + '</div>',
+	        afterText: 	`<div class="list-block list-block-modal  no-hairlines modal-checkbox">
+	            			<ul>	            			
+		            			<li>
+								    <label class="label-radio item-content">								        
+								        <input type="radio" name="radio-bilge-interval" value="1" ${ page.context.InputInterval == 1 ? 'checked="checked"' : ''} >
+								        <div class="item-media">
+								          	<i class="icon icon-form-radio"></i>
+								        </div>
+								        <div class="item-inner">
+								          	<div class="item-title">1 ${ LANGUAGE.COM_MSG44 }</div>
+								        </div>
+								    </label>
+							    </li>
+							    <li>
+								    <label class="label-radio item-content">								        
+								        <input type="radio" name="radio-bilge-interval" value="2" ${ page.context.InputInterval == 2 ? 'checked="checked"' : ''}>
+								        <div class="item-media">
+								          	<i class="icon icon-form-radio"></i>
+								        </div>
+								        <div class="item-inner">
+								          	<div class="item-title">2 ${ LANGUAGE.COM_MSG47 }</div>
+								        </div>
+								    </label>
+							    </li>
+							    <li>
+								    <label class="label-radio item-content">								        
+								        <input type="radio" name="radio-bilge-interval" value="5" ${ page.context.InputInterval == 5 ? 'checked="checked"' : ''}>
+								        <div class="item-media">
+								          	<i class="icon icon-form-radio"></i>
+								        </div>
+								        <div class="item-inner">
+								          	<div class="item-title">5 ${ LANGUAGE.COM_MSG47 }</div>
+								        </div>
+								    </label>
+							    </li>
+							    <li>
+								    <label class="label-radio item-content">								        
+								        <input type="radio" name="radio-bilge-interval" value="0" ${ page.context.InputInterval != 5 && page.context.InputInterval != 2 && page.context.InputInterval != 1 ? 'checked="checked"' : ''}>
+								        <div class="item-media">
+								          	<i class="icon icon-form-radio"></i>
+								        </div>
+								        <div class="item-inner">
+								          	<div class="item-title">${ LANGUAGE.COM_MSG45 }</div>
+								        </div>
+								    </label>
+							    </li>
+							    <li class="custom-interval-wrapper ${ page.context.InputInterval == 5 || page.context.InputInterval == 2 || page.context.InputInterval == 1 ? 'disabled' : ''} ">
+								    <div class="item-content">
+								        <div class="item-inner">
+								        	<div class="item-input">
+								        	  	<input type="tel" name="radio-bilge-interval-custom" class="only_numbers" maxlength="5" placeholder="${ LANGUAGE.ALARM_MSG26 }" value="${ page.context.InputInterval && page.context.InputInterval != 5 && page.context.InputInterval != 2 && page.context.InputInterval != 1 ? page.context.InputInterval : '' }">
+								        	</div>
+								        </div>
+								    </div>
+								</li> 	            				
+	            			</ul>
+	            		</div>`,
+	        buttons: [{
+	                text: LANGUAGE.COM_MSG04,
+	                //color: 'gray',
+	                onClick: function() {
 
-                    }
-                },
-                {
-                    text: LANGUAGE.COM_MSG38,
-                    //color: 'boatwatch',
-                    bold: true,
-                    onClick: function(popup) {
-                        var radioBilgeIntervalVal = $$(popup).find('[name="radio-bilge-interval"]:checked').val();
-                        console.log(radioBilgeIntervalVal);
-                        if (radioBilgeIntervalVal == '0') {
-                            page.context.InputInterval = parseInt($$(popup).find('[name="radio-bilge-interval-custom"]').val(),10);
-                        }else{
-                            page.context.InputInterval = parseInt(radioBilgeIntervalVal,10);
-                        }
-                    }
-                },
-            ]
-        });
+	                }
+	            },
+	            {
+	                text: LANGUAGE.COM_MSG38,
+	                //color: 'boatwatch',
+	                bold: true,
+	                onClick: function(popup) {
+	                	var radioBilgeIntervalVal = $$(popup).find('[name="radio-bilge-interval"]:checked').val();
+	                	if (radioBilgeIntervalVal == '0') {
+	                		page.context.InputInterval = parseInt($$(popup).find('[name="radio-bilge-interval-custom"]').val(),10);
+	                	}else{
+	                		page.context.InputInterval = parseInt(radioBilgeIntervalVal,10);
+	                	}
+	                }
+	            },
+	        ]
+	    });
 
         $$(modal).on('modal:opened', function (e) {
-            var customInputWrapperEl = $$(e.target).find('.custom-interval-wrapper');
-            $$(e.target).on('change', '[name="radio-bilge-interval"]', function(){
-                if (this.value == '0') {
-                    customInputWrapperEl.removeClass('disabled');
-                }else{
-                    customInputWrapperEl.addClass('disabled');
-                }
-            });
+        	var customInputWrapperEl = $$(e.target).find('.custom-interval-wrapper');
+        	$$(e.target).on('change', '[name="radio-bilge-interval"]', function(){
+        		if (this.value == '0') {
+        			customInputWrapperEl.removeClass('disabled');
+        		}else{
+        			customInputWrapperEl.addClass('disabled');
+        		}
+        	});
 
-        })
+	    })
     });
 
     $$('.saveAlarm').on('click', function(e) {
@@ -1415,7 +1415,7 @@ App.onPageInit('alarms.select', function (page) {
             //DateFrom: moment(BeginTimeInput.val(), 'HH:mm').utc().format('HH:mm'),
             //DateTo: moment(EndTimeInput.val(), 'HH:mm').utc().format('HH:mm'),
             AlertTypes: 0,
-            InputInterval: page.context.InputInterval ? page.context.InputInterval : 0,
+            InputInterval:  page.context.InputInterval ? page.context.InputInterval : 0,
             //Weeks: '',
             //IsIgnore: 0,
         };
@@ -1426,6 +1426,7 @@ App.onPageInit('alarms.select', function (page) {
         //if (ignoreDaysArr && ignoreDaysArr.length) {
         //    data.Weeks = ignoreDaysArr.toString();
         //}
+
         var fields = $$(page.container).find('input[type = "radio"]:checked');
         $.each(fields, function( index, value ) {
             data.AlertTypes += parseInt(this.value, 10);
@@ -1437,14 +1438,6 @@ App.onPageInit('alarms.select', function (page) {
                 data.InputInterval = 5; //set default interval 5 mins if other intervalnot selected
             }
         }
-
-        /*if (allCheckboxes && allCheckboxes.length) {
-            for (var i = allCheckboxes.length - 1; i >= 0; i--) {
-                if (!allCheckboxes[i].checked) {
-                    data.AlertTypes += parseInt(allCheckboxes[i].value, 10);
-                }
-            }
-        }*/
 
         /*if (speedingInputEl.is(":checked")) {
             data.SpeedingMode = parseInt($$(page.container).find('input[name="overspeed-radio"]:checked').val(),10);
@@ -1552,54 +1545,394 @@ App.onPageInit('alarms.select', function (page) {
 
     });*/
 
-    /*$$('.saveAlarm').on('click', function(e){
-        var alarmOptions = {
-            IMEI: assets,
-            options: 0,
-        };
-        if (alarm.is(":checked")) {
-            alarmOptions.alarm = true;
-        }
-
-        $.each(alarmFields, function( index, value ) {
-            var field = $$(page.container).find('input[name = "checkbox-'+value+'"]');
-            if (!field.is(":checked")) {
-                alarmOptions[value] = false;
-                alarmOptions.options = alarmOptions.options + parseInt(field.val(), 10);
-            }else{
-                alarmOptions[value] = true;
-            }
-        });
-
-        var userInfo = getUserinfo();
-        var url = API_URL.URL_SET_ALARM.format(userInfo.MinorToken,
-                alarmOptions.IMEI,
-                alarmOptions.options
-            );
-
-        App.showPreloader();
-        JSON1.request(url, function(result){
-                console.log(result);
-                if (result.MajorCode == '000') {
-                    //setAlarmList(alarmOptions);
-                    updateAlarmOptVal(alarmOptions);
-                    mainView.router.back({
-                        pageName: 'index',
-                        force: true
-                    });
-                }else{
-                    App.alert('Something wrong');
-                }
-                App.hidePreloader();
-            },
-            function(){ App.hidePreloader(); App.alert(LANGUAGE.COM_MSG16); }
-        );
-
-    });*/
 
 
 
 });
+
+
+
+var virtualContactList = null;
+App.onPageInit('contacts', function (page) {
+    var listContainer = $$(page.container).find('.contactList');
+    var searchForm = $$(page.container).find('.searchbarContacts');
+    var arrList = getContactList();
+
+
+    if (virtualContactList) {
+        virtualContactList.destroy();
+    }
+    virtualContactList = App.virtualList(listContainer, {
+        searchAll: function (query, items) {
+            var foundItems = [];
+            for (var i = 0; i < items.length; i++) {
+                // Check if title contains query string
+                if (items[i].Name.toLowerCase().indexOf(query.toLowerCase().trim()) >= 0) foundItems.push(i);
+            }
+            // Return array with indexes of matched items
+            return foundItems;
+        },
+        height: function (item) {
+            return item.EMail ? 72 : 52
+        },
+        items: arrList,
+        renderItem: function (index, item) {
+            var ret =   '<li class="item-content" id="'+ item.Code +'" data-code="'+ item.Code +'" data-index="'+ index +'" data-name="'+ item.FullName +'">' +
+              '<div class="item-inner">' +
+              '<div class="item-title-row">' +
+              '<div class="item-title">'+ item.FullName +'</div>' +
+              '<div class="item-after "><a href="#" class="item-link contact_menu"><i class="f7-icons icon-other-menu color-boatwatch"></i></a></div>' +
+              '</div>' +
+              '<div class="item-text">'+ item.EMail +'</div>' +
+              '</div>' +
+              '</li>';
+            return  ret;
+        },
+        emptyTemplate: `<div class="content-block">${LANGUAGE.PROMPT_MSG061}</div>`,
+    });
+
+    initSearchbar(searchForm);
+
+    $$('.addContact').on('click', function(e){
+        mainView.router.load({
+            url:'resources/templates/contact.add.html',
+            context:{
+                PageName: LANGUAGE.CONTACTS_MSG00,
+            }
+        });
+    });
+
+    listContainer.on('click', '.item-title, .item-text', function () {
+        editContact($$(this).closest('li').data('code'));
+    });
+
+    listContainer.on('click', '.contact_menu', function () {
+        var parentLi = $$(this).closest('li');
+        var code = parentLi.data('code');
+        var listIndex = parentLi.data('index');
+        var name= parentLi.data('name');
+        //virtualGeofenceList.deleteItem(listIndex);
+        var buttons = [
+            {
+                text: LANGUAGE.COM_MSG17,
+                color: 'boatwatch',
+                onClick: function () {
+                    editContact(code);
+                }
+            },
+            {
+                text: LANGUAGE.COM_MSG18,
+                color: 'boatwatch',
+                onClick: function () {
+                    App.confirm(LANGUAGE.PROMPT_MSG058,name, function(){
+                        deleteContact(code, listIndex);
+                    });
+                }
+            },
+            {
+                text: LANGUAGE.COM_MSG04,
+                color: 'red',
+            },
+        ];
+        App.actions(buttons);
+    });
+});
+
+App.onPageInit('contact.add', function (page) {
+    $$(page.container).find('.saveContact').on('click', function(){
+
+        var userInfo = getUserinfo();
+
+        let url = API_URL.CONTACT_USER_ADD;
+        let data = {
+            MajorToken: userInfo.MajorToken,
+
+            FirstName: $$(page.container).find('input[name="FirstName"]').val(),
+            SubName: $$(page.container).find('input[name="SubName"]').val(),
+            EMail: $$(page.container).find('input[name="EMail"]').val(),
+            Mobile: $$(page.container).find('input[name="Mobile"]').val(),
+            //Phone: $$(page.container).find('input[name="Phone"]').val(),
+        };
+
+        if (page.context.Code) {
+            url = API_URL.CONTACT_USER_EDIT;
+            data.MinorToken = page.context.Code;
+        }
+
+        if(!data.FirstName){
+            App.alert(LANGUAGE.PROMPT_MSG056);
+            return;
+        }
+        if(!data.EMail){
+            App.alert(LANGUAGE.PROMPT_MSG057);
+            return;
+        }
+
+            App.showPreloader();
+        JSON1.requestPost(url, data, function(result){
+              console.log(result);
+              if (result.MajorCode === '000') {
+                  loadContactsPage();
+              }else if(result.MajorCode === '100' && result.MinorCode === '1005'){
+                  App.alert(LANGUAGE.PROMPT_MSG059);
+              }else{
+                  App.alert(LANGUAGE.PROMPT_MSG013);
+              }
+              App.hidePreloader();
+          },
+          function(){ App.hidePreloader(); App.alert(LANGUAGE.COM_MSG02); }
+        );
+
+    });
+});
+
+var virtualAReportsList = null;
+App.onPageInit('automated.reports', function (page) {
+    var listContainer = $$(page.container).find('.aReportsList');
+    var arrList = getAReportList();
+
+    if(arrList && arrList.length){
+        arrList = arrList.filter(function(itm) {
+            return itm.Type === 5;
+        });
+        arrList.sort(function(a,b){
+            if(a.Name < b.Name) return -1;
+            if(a.Name > b.Name) return 1;
+            return 0;
+        });
+    }
+
+    if (virtualAReportsList) {
+        virtualAReportsList.destroy();
+    }
+    virtualAReportsList = App.virtualList(listContainer, {
+        searchAll: function (query, items) {
+            var foundItems = [];
+            for (var i = 0; i < items.length; i++) {
+                // Check if title contains query string
+                if (items[i].Name.toLowerCase().indexOf(query.toLowerCase().trim()) >= 0) foundItems.push(i);
+            }
+            // Return array with indexes of matched items
+            return foundItems;
+        },
+        items: arrList,
+        height: 76,
+        renderItem: function (index, item) {
+            var ret =   '<li class="item-content" id="'+ item.Code +'" data-code="'+ item.Code +'" data-index="'+ index +'">' +
+              '<div class="item-inner">' +
+              '<div class="item-title-row">' +
+              '<div class="item-title">'+ item.Name +'</div>' +
+              '<div class="item-after "><a href="#" class="item-link areport_menu"><i class="f7-icons icon-other-menu-geofence color-boatwatch"></i></a></div>' +
+              '</div>' +
+              `<div class="item-text ${ item.State === 1 ? 'state-1' : 'state-0' }"><i class="f7-icons icon-status-circle icon-status-fix"></i>${ item.State === 1 ? LANGUAGE.COM_MSG57 : LANGUAGE.COM_MSG58 }</div>` +
+              '</div>' +
+              '</li>';
+            return  ret;
+        },
+        emptyTemplate: `<div class="content-block">${LANGUAGE.PROMPT_MSG060}</div>`,
+    });
+
+    //initSearchbar(geofenceSearchForm);
+
+
+   /* $$('.button_search').on('click', function(){
+        $('.searchbarGeofence').slideDown(400, function(){
+            $$('.searchbarGeofence input').focus();
+        });
+    });*/
+    $$('.addAReport').on('click', function(e){
+        editAReport();
+    });
+
+    listContainer.on('click', '.item-title, .item-text', function () {
+        editAReport($$(this).closest('li').data('code'));
+    });
+
+    listContainer.on('click', '.areport_menu', function () {
+        var parentLi = $$(this).closest('li');
+        var code = parentLi.data('code');
+        var listIndex = parentLi.data('index');
+        //virtualGeofenceList.deleteItem(listIndex);
+        var buttons = [
+            {
+                text: LANGUAGE.COM_MSG17,
+                color: 'boatwatch',
+                onClick: function () {
+                    editAReport(code);
+                }
+            },
+            {
+                text: LANGUAGE.COM_MSG18,
+                color: 'boatwatch',
+                onClick: function () {
+                    App.confirm(LANGUAGE.PROMPT_MSG055, function(){
+                        deleteAReport(code, listIndex);
+                    });
+                }
+            },
+            {
+                text: LANGUAGE.COM_MSG04,
+                color: 'red',
+            },
+        ];
+        App.actions(buttons);
+    });
+
+
+});
+
+
+
+App.onPageInit('automated.reports.add', function (page) {
+    console.log(page.context)
+    $$('txr-sms-chat').hide();
+
+    sheduleDependOptioncontrol(page.context.ScheduleSelected, page.container);
+
+    $$(page.container).find('[name="IntervalType"]').on('change', function () {
+        sheduleDependOptioncontrol(this.value, page.container);
+    });
+
+    $$(page.container).find('.addCustomContact').on('click', function () {
+        let input = $$(this).closest('.item-inner').find('input')[0];
+        if(!input.value){
+            App.alert(LANGUAGE.PROMPT_MSG062);
+            return;
+        }
+        if(!validateEmail(input.value)){
+            App.alert(LANGUAGE.PROMPT_MSG063);
+            return;
+        }
+
+        let template = `
+            <li>
+                <div class="item-content with-additional-button">
+                    <div class="item-inner">
+                        <div class="item-title label color-boatwatch">${ LANGUAGE.COM_MSG55 }</div>
+                        <div class="item-input item-input-field not-empty-state">
+                            <input type="email" placeholder="${ LANGUAGE.COM_MSG55 }" name="CustomEmail" value="${ input.value }" readonly maxlength="200">
+                        </div>
+                        <a href="#" class="item-additional-button link color-red removeCustomContact"><i class="icon icon-other-remove"></i></a>
+                    </div>
+                </div>
+            </li>
+        `;
+        $$(page.container).find('.custom-emails-wrapper').prepend(template);
+        input.value = '';
+    });
+
+    $$(page.container).on('click', '.removeCustomContact', function () {
+        this.closest('li').remove();
+    });
+
+
+    $$(page.container).find('.saveReport').on('click', function(){
+
+        var userInfo = getUserinfo();
+
+        var name = $$(page.container).find('[name="Name"]').val().trim();
+        var assets = $$(page.container).find('[name="assets"]').val();
+        var contacts = $$(page.container).find('[name="Emails"]').val();
+        var state = $$(page.container).find('[name="State"]');
+        var customEmails =  $$(page.container).find('[name="CustomEmail"]');
+        var intervalType = $$(page.container).find('[name="IntervalType"]').val();
+
+        if(!name){
+            App.alert(LANGUAGE.PROMPT_MSG065);
+            return;
+        }
+        if(!Array.isArray(assets) || !assets.length){
+            App.alert(LANGUAGE.PROMPT_MSG064);
+            return;
+        }
+
+        if(!Array.isArray(contacts) || !contacts.length){
+            App.alert(LANGUAGE.PROMPT_MSG066);
+            return;
+        }
+
+
+        let data = {
+            MajorToken: userInfo.MajorToken,
+            MinorToken: userInfo.MinorToken,
+
+            Type: $$(page.container).find('[name="Type"]').data('type-code'),
+            Name: name,
+            IntervalType: intervalType,
+            IntervalValue: intervalType !== 2 ? $$(page.container).find('[name="IntervalValue'+intervalType+'"]').val() : '',
+            State: state.is(":checked") ? 1 : 0,
+            Assets: Array.isArray(assets) ? assets.toString() : '',
+            NotifyEmails: Array.isArray(contacts) ? contacts.toString() : '',
+            Remark: ''
+        };
+
+        if(customEmails.length){
+            customEmails.each(function (key, val) {
+                if(val.value && validateEmail(val.value)){
+                    data.Remark += val.value+'\r\n';
+                }
+            })
+        }
+
+        if (page.context.Code) {
+            data.Code = page.context.Code;
+        }
+
+        console.log(data)
+
+        App.showPreloader();
+        $.ajax({
+            type: "POST",
+            url: API_URL.AUTOMATED_REPORT_EDIT,
+            data: data,
+            async: true,
+            cache: false,
+            crossDomain: true,
+            success: function (result) {
+                App.hidePreloader();
+                if (result.MajorCode === '000') {
+                    loadAutomatedReportsPage();
+                }else{
+                    App.alert(LANGUAGE.PROMPT_MSG013);
+                }
+
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown){
+                App.hidePreloader(); App.alert(LANGUAGE.COM_MSG02);
+            }
+        });
+        /*App.showPreloader();
+        JSON1.requestPost(API_URL.AUTOMATED_REPORT_EDIT, data, function(result){
+              console.log(result);
+              if (result.MajorCode === '000') {
+                  loadAutomatedReportsPage();
+              }else{
+                  App.alert(LANGUAGE.PROMPT_MSG013);
+              }
+              App.hidePreloader();
+          },
+          function(){ App.hidePreloader(); App.alert(LANGUAGE.COM_MSG02); });
+
+        */
+    });
+    //
+
+});
+function sheduleDependOptioncontrol(selected, container) {
+    let schduleDependOptions =  $$(container).find('.schedule-depend-option');
+    schduleDependOptions.hide();
+    if(selected) selected = parseInt(selected);
+    console.log(selected)
+    if(selected === 1){ //daily
+        $$(container).find('.schedule-depend-option-weekday').show();
+    }else if(selected === 3){ //monthly
+        $$(container).find('.schedule-depend-option-monthday').show();
+    }
+}
+App.onPageBeforeRemove('automated.reports.add', function(page){
+    $$('txr-sms-chat').show();
+});
+
 
 
 var virtualGeofenceList = null;
@@ -1704,7 +2037,6 @@ App.onPageInit('geofence', function (page) {
 
 
 });
-
 
 
 
@@ -1935,94 +2267,105 @@ App.onPageInit('resetPwd', function (page) {
 
 App.onPageInit('asset.alarm', function (page) {
 
-    $(page.container).find('input[type="radio"]').checkRadioTweak();
-
     var bilgePumpConfigEl = $$(page.container).find('.openBilgePumpConfig');
     bilgePumpConfigEl.on('click', function () {
         var modal = App.modal({
-            title: LANGUAGE.ALARM_MSG02,
-            text: '<div class="custom-modal-text">' + LANGUAGE.PROMPT_MSG054 + '</div>',
-            afterText:  `<div class="list-block list-block-modal  no-hairlines modal-checkbox">
-                            <ul>        
-                                <li>
-                                    <label class="label-radio item-content">                                        
-                                        <input type="radio" name="radio-bilge-interval" value="1" ${ page.context.InputInterval == 1 ? 'checked="checked"' : ''} >                                       
-                                        <div class="item-inner">
-                                            <div class="item-title">1 ${ LANGUAGE.COM_MSG44 }</div>
-                                        </div>
-                                    </label>
-                                </li>
-                                <li>
-                                    <label class="label-radio item-content">                                        
-                                        <input type="radio" name="radio-bilge-interval" value="2" ${ page.context.InputInterval == 2 ? 'checked="checked"' : ''}>                                        
-                                        <div class="item-inner">
-                                            <div class="item-title">2 ${ LANGUAGE.COM_MSG47 }</div>
-                                        </div>
-                                    </label>
-                                </li>
-                                <li>
-                                    <label class="label-radio item-content">                                        
-                                        <input type="radio" name="radio-bilge-interval" value="5" ${ page.context.InputInterval == 5 ? 'checked="checked"' : ''}>                                        
-                                        <div class="item-inner">
-                                            <div class="item-title">5 ${ LANGUAGE.COM_MSG47 }</div>
-                                        </div>
-                                    </label>
-                                </li>
-                                <li>
-                                    <label class="label-radio item-content">                                        
-                                        <input type="radio" name="radio-bilge-interval" value="0" ${ page.context.InputInterval != 5 && page.context.InputInterval != 2 && page.context.InputInterval != 1 ? 'checked="checked"' : ''}>                                        
-                                        <div class="item-inner">
-                                            <div class="item-title">${ LANGUAGE.COM_MSG45 }</div>
-                                        </div>
-                                    </label>
-                                </li>
-                                <li class="custom-interval-wrapper ${ page.context.InputInterval == 5 || page.context.InputInterval == 2 || page.context.InputInterval == 1 ? 'disabled' : ''} ">
-                                    <div class="item-content">
-                                        <div class="item-inner">
-                                            <div class="item-input">
-                                                <input type="tel" name="radio-bilge-interval-custom" class="only_numbers" maxlength="5" placeholder="${ LANGUAGE.ALARM_MSG26 }" value="${ page.context.InputInterval && page.context.InputInterval != 5 && page.context.InputInterval != 2 && page.context.InputInterval != 1 ? page.context.InputInterval : '' }">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </li>                               
-                            </ul>
-                        </div>`,
-            buttons: [{
-                    text: LANGUAGE.COM_MSG04,
-                    //color: 'gray',
-                    onClick: function() {
+	        title: LANGUAGE.ALARM_MSG02,
+	        text: '<div class="custom-modal-text">' + LANGUAGE.PROMPT_MSG054 + '</div>',
+	        afterText: 	`<div class="list-block list-block-modal  no-hairlines modal-checkbox">
+	            			<ul>	            			
+		            			<li>
+								    <label class="label-radio item-content">								        
+								        <input type="radio" name="radio-bilge-interval" value="1" ${ page.context.InputInterval == 1 ? 'checked="checked"' : ''} >
+								        <div class="item-media">
+								          	<i class="icon icon-form-radio"></i>
+								        </div>
+								        <div class="item-inner">
+								          	<div class="item-title">1 ${ LANGUAGE.COM_MSG44 }</div>
+								        </div>
+								    </label>
+							    </li>
+							    <li>
+								    <label class="label-radio item-content">								        
+								        <input type="radio" name="radio-bilge-interval" value="2" ${ page.context.InputInterval == 2 ? 'checked="checked"' : ''}>
+								        <div class="item-media">
+								          	<i class="icon icon-form-radio"></i>
+								        </div>
+								        <div class="item-inner">
+								          	<div class="item-title">2 ${ LANGUAGE.COM_MSG47 }</div>
+								        </div>
+								    </label>
+							    </li>
+							    <li>
+								    <label class="label-radio item-content">								        
+								        <input type="radio" name="radio-bilge-interval" value="5" ${ page.context.InputInterval == 5 ? 'checked="checked"' : ''}>
+								        <div class="item-media">
+								          	<i class="icon icon-form-radio"></i>
+								        </div>
+								        <div class="item-inner">
+								          	<div class="item-title">5 ${ LANGUAGE.COM_MSG47 }</div>
+								        </div>
+								    </label>
+							    </li>
+							    <li>
+								    <label class="label-radio item-content">								        
+								        <input type="radio" name="radio-bilge-interval" value="0" ${ page.context.InputInterval != 5 && page.context.InputInterval != 2 && page.context.InputInterval != 1 ? 'checked="checked"' : ''}>
+								        <div class="item-media">
+								          	<i class="icon icon-form-radio"></i>
+								        </div>
+								        <div class="item-inner">
+								          	<div class="item-title">${ LANGUAGE.COM_MSG45 }</div>
+								        </div>
+								    </label>
+							    </li>
+							    <li class="custom-interval-wrapper ${ page.context.InputInterval == 5 || page.context.InputInterval == 2 || page.context.InputInterval == 1 ? 'disabled' : ''} ">
+								    <div class="item-content">
+								        <div class="item-inner">
+								        	<div class="item-input">
+								        	  	<input type="tel" name="radio-bilge-interval-custom" class="only_numbers" maxlength="5" placeholder="${ LANGUAGE.ALARM_MSG26 }" value="${ page.context.InputInterval && page.context.InputInterval != 5 && page.context.InputInterval != 2 && page.context.InputInterval != 1 ? page.context.InputInterval : '' }">
+								        	</div>
+								        </div>
+								    </div>
+								</li> 	            				
+	            			</ul>
+	            		</div>`,
+	        buttons: [{
+	                text: LANGUAGE.COM_MSG04,
+	                //color: 'gray',
+	                onClick: function() {
 
-                    }
-                },
-                {
-                    text: LANGUAGE.COM_MSG38,
-                    //color: 'boatwatch',
-                    bold: true,
-                    onClick: function(popup) {
-                        var radioBilgeIntervalVal = $$(popup).find('[name="radio-bilge-interval"]:checked').val();
-
-                        if (radioBilgeIntervalVal == '0') {
-                            page.context.InputInterval = parseInt($$(popup).find('[name="radio-bilge-interval-custom"]').val(),10);
-                        }else{
-                            page.context.InputInterval = parseInt(radioBilgeIntervalVal,10);
-                        }
-                    }
-                },
-            ]
-        });
+	                }
+	            },
+	            {
+	                text: LANGUAGE.COM_MSG38,
+	                bold: true,
+	                //color: 'boatwatch',
+	                onClick: function(popup) {
+	                	var radioBilgeIntervalVal = $$(popup).find('[name="radio-bilge-interval"]:checked').val();
+	                	if (radioBilgeIntervalVal == '0') {
+	                		page.context.InputInterval = parseInt($$(popup).find('[name="radio-bilge-interval-custom"]').val(),10);
+	                	}else{
+	                		page.context.InputInterval = parseInt(radioBilgeIntervalVal,10);
+	                	}
+	                }
+	            },
+	        ]
+	    });
 
         $$(modal).on('modal:opened', function (e) {
-            var customInputWrapperEl = $$(e.target).find('.custom-interval-wrapper');
-            $$(e.target).on('change', '[name="radio-bilge-interval"]', function(){
-                if (this.value == '0') {
-                    customInputWrapperEl.removeClass('disabled');
-                }else{
-                    customInputWrapperEl.addClass('disabled');
-                }
-            });
+        	var customInputWrapperEl = $$(e.target).find('.custom-interval-wrapper');
+        	$$(e.target).on('change', '[name="radio-bilge-interval"]', function(){
+        		if (this.value == '0') {
+        			customInputWrapperEl.removeClass('disabled');
+        		}else{
+        			customInputWrapperEl.addClass('disabled');
+        		}
+        	});
 
-        })
+	    })
     });
+
+
 
     $$('.saveAlarm').on('click', function(e) {
         var userInfo = getUserinfo();
@@ -2050,6 +2393,7 @@ App.onPageInit('asset.alarm', function (page) {
         $.each(fields, function( index, value ) {
             data.AlertTypes += parseInt(this.value, 10);
         });
+
         if ((data.AlertTypes & 131072) > 0) {
             data.InputInterval = 0;  //set interval 0 if bilge pump alarm turned off
         }else{
@@ -2057,9 +2401,6 @@ App.onPageInit('asset.alarm', function (page) {
                 data.InputInterval = 5; //set default interval 5 mins if other intervalnot selected
             }
         }
-
-
-
         /*if (allCheckboxes && allCheckboxes.length) {
             for (var i = allCheckboxes.length - 1; i >= 0; i--) {
                 if (!allCheckboxes[i].checked) {
@@ -2171,11 +2512,18 @@ App.onPageInit('asset.alarm', function (page) {
 
     });*/
 
+
+
 });
+/*
+App.onPageBeforeRemove('asset.alarm', function () {
+    $$('txr-sms-chat').hide();
+})*/
+
 
 
 App.onPageInit('asset.playback', function (page) {
-    window.MONTHS = [LANGUAGE.ASSET_PLAYBACK_MSG12,LANGUAGE.ASSET_PLAYBACK_MSG13,LANGUAGE.ASSET_PLAYBACK_MSG14,LANGUAGE.ASSET_PLAYBACK_MSG15,LANGUAGE.ASSET_PLAYBACK_MSG16,LANGUAGE.ASSET_PLAYBACK_MSG17,LANGUAGE.ASSET_PLAYBACK_MSG18,LANGUAGE.ASSET_PLAYBACK_MSG19,LANGUAGE.ASSET_PLAYBACK_MSG20,LANGUAGE.ASSET_PLAYBACK_MSG21,LANGUAGE.ASSET_PLAYBACK_MSG22,LANGUAGE.ASSET_PLAYBACK_MSG23];
+	window.MONTHS = [LANGUAGE.ASSET_PLAYBACK_MSG12,LANGUAGE.ASSET_PLAYBACK_MSG13,LANGUAGE.ASSET_PLAYBACK_MSG14,LANGUAGE.ASSET_PLAYBACK_MSG15,LANGUAGE.ASSET_PLAYBACK_MSG16,LANGUAGE.ASSET_PLAYBACK_MSG17,LANGUAGE.ASSET_PLAYBACK_MSG18,LANGUAGE.ASSET_PLAYBACK_MSG19,LANGUAGE.ASSET_PLAYBACK_MSG20,LANGUAGE.ASSET_PLAYBACK_MSG21,LANGUAGE.ASSET_PLAYBACK_MSG22,LANGUAGE.ASSET_PLAYBACK_MSG23];
 
     var playbackListSettings = $$(page.container).find('.list-playback-settings');
     var today = new Date();
@@ -2189,7 +2537,7 @@ App.onPageInit('asset.playback', function (page) {
                           '<div class="toolbar-inner">'+
                             '<div class="left"><div class="text">'+LANGUAGE.ASSET_PLAYBACK_MSG04+'</div></div>'+
                             '<div class="right">'+
-                              '<a href="#" class="link close-picker color-white">{{closeText}}</a>'+
+                              '<a href="#" class="link close-picker color-black">{{closeText}}</a>'+
                             '</div>'+
                           '</div>'+
                         '</div>',
@@ -2205,13 +2553,13 @@ App.onPageInit('asset.playback', function (page) {
 
         formatValue: function (p, values, displayValues) {
             //console.log(displayValues);
-            if (Array.isArray(displayValues) && displayValues.length === 0) {
+			if (Array.isArray(displayValues) && displayValues.length === 0) {
                 displayValues[0] = moment(yesterday).format('MMMM');
             }
-            else if(parseInt(displayValues[0]) >= 0){
-                displayValues[0] = MONTHS[parseInt(displayValues[0])];
+			else if(parseInt(displayValues[0]) >= 0){
+            	displayValues[0] = MONTHS[parseInt(displayValues[0])];
             }
-            /*let monthArray = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];*/
+			/*let monthArray = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];*/
             return displayValues[0] + ' ' + values[1] + ', ' + values[2];
         },
 
@@ -2219,7 +2567,7 @@ App.onPageInit('asset.playback', function (page) {
             // Months
             {
                 values: ('0 1 2 3 4 5 6 7 8 9 10 11').split(' '),
-                //values: ('Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec').split(' '),
+				//values: ('Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec').split(' '),
                 //displayValues: ('January February March April May June July August September October November December').split(' '),
                 displayValues: MONTHS,
                 textAlign: 'left'
@@ -2302,7 +2650,7 @@ App.onPageInit('asset.playback', function (page) {
                           '<div class="toolbar-inner">'+
                             '<div class="left"><div class="text">'+LANGUAGE.ASSET_PLAYBACK_MSG06+'</div></div>'+
                             '<div class="right">'+
-                              '<a href="#" class="link close-picker color-white">{{closeText}}</a>'+
+                              '<a href="#" class="link close-picker color-black">{{closeText}}</a>'+
                             '</div>'+
                           '</div>'+
                         '</div>',
@@ -2320,8 +2668,8 @@ App.onPageInit('asset.playback', function (page) {
             if (Array.isArray(displayValues) && displayValues.length === 0) {
                 displayValues[0] = moment().format('MMMM');
             }
-            else if(parseInt(displayValues[0]) >= 0){
-                displayValues[0] = MONTHS[parseInt(displayValues[0])];
+			else if(parseInt(displayValues[0]) >= 0){
+            	displayValues[0] = MONTHS[parseInt(displayValues[0])];
             }
             return displayValues[0] + ' ' + values[1] + ', ' + values[2];
         },
@@ -2444,12 +2792,14 @@ App.onPageInit('asset.playback', function (page) {
 
         }
     });
+    //$$('txr-sms-chat').hide();
 
 });
 
 App.onPageBeforeRemove('asset.playback', function(page){
     // fix to close modal calendar if it was opened and default back button pressed
     App.closeModal('.custom-picker');
+    //$$('txr-sms-chat').show();
 });
 
 App.onPageInit('asset.location', function (page) {
@@ -2476,7 +2826,6 @@ App.onPageBeforeRemove('asset.location', function(page){
 });
 
 App.onPageInit('asset.track', function (page) {
-    $(page.container).find('input[name="Geofence"]').checkRadioTweak();
     showMap();
 
     var posTime = $$(page.container).find('.position_time');
@@ -2514,6 +2863,7 @@ App.onPageInit('asset.track', function (page) {
     });
 
     trackTimer = setInterval(function(){
+    		//console.log('trackTimer');
                 updateMarkerPositionTrack(data);
             }, 10000);
 
@@ -2533,21 +2883,10 @@ App.onPageInit('asset.track', function (page) {
             window.PosMarker[TargetAsset.ASSET_IMEI+'-geofence'] = false;
         }
     });*/
-    var geofenceTitles = $$(page.container).find('.geofenceSetList .item-title');
+
     var geofence = $$(page.container).find('input[name="Geofence"]');
-
-
-    geofenceTitles.on('click touch', function(){
-        var radio = $$(this).siblings('.check-radio-tweak-wrapper');
-        if (radio.length) {
-            radio.click();
-        }
-    });
-
     geofence.on('change', function(){
         var latlng = window.PosMarker[TargetAsset.ASSET_IMEI].getLatLng();
-
-        console.log(window.PosMarker[TargetAsset.ASSET_IMEI].getLatLng())
 
         changeAssetGeoFenceSate({
             id: TargetAsset.ASSET_ID,
@@ -2559,7 +2898,6 @@ App.onPageInit('asset.track', function (page) {
             latlng: latlng,
             address: latlng.toString(),
         });
-
         if (strToBool(this.value)) {
             window.PosMarker[TargetAsset.ASSET_IMEI+'-geofence'] = L.circle([latlng.lat, latlng.lng], {radius: 100,color: 'red',fillColor: '#f03',fillOpacity: 0.2,});
             window.PosMarker[TargetAsset.ASSET_IMEI+'-geofence'].addTo(MapTrack);
@@ -2576,6 +2914,7 @@ App.onPageInit('asset.track', function (page) {
 
 
 App.onPageBeforeRemove('asset.track', function(page){
+	//console.log('here');
     clearInterval(trackTimer);
     trackTimer = false;
     $$('txr-sms-chat').show();
@@ -2826,6 +3165,7 @@ function login(){
                 setUserinfo(result.Data);
                 setAssetList(result.Data.Devices);
                 getGeoFenceListFromServer();
+                getContactsFromServer();
 
                 //init_AssetList();
                 //initSearchbar();
@@ -2929,6 +3269,8 @@ function init_AssetList() {
 
 
 function initSearchbar(searchContainer){
+
+
     if (!searchContainer) {
         if (searchbar) {
             searchbar.destroy();
@@ -2943,18 +3285,34 @@ function initSearchbar(searchContainer){
             }
         });
     }else{
-        if (searchbarGeofence) {
-            searchbarGeofence.destroy();
-        }
-        searchbarGeofence = App.searchbar(searchContainer, {
-            searchList: '.list-block-search-geofence',
-            searchIn: '.item-title',
-            found: '.searchbar-found',
-            notFound: '.searchbar-not-found',
-            onDisable: function(s){
-                /*$(s.container).slideUp();*/
+        if (searchContainer.hasClass('searchbarContacts')){
+            if (searchbarContacts) {
+                searchbarContacts.destroy();
             }
-        });
+            searchbarContacts = App.searchbar(searchContainer, {
+                searchList: '.list-block-search-contacts',
+                searchIn: '.item-title',
+                found: '.searchbar-found',
+                notFound: '.searchbar-not-found',
+                onDisable: function(s){
+                    /*$(s.container).slideUp();*/
+                }
+            });
+        }else{
+            if (searchbarGeofence) {
+                searchbarGeofence.destroy();
+            }
+            searchbarGeofence = App.searchbar(searchContainer, {
+                searchList: '.list-block-search-geofence',
+                searchIn: '.item-title',
+                found: '.searchbar-found',
+                notFound: '.searchbar-not-found',
+                onDisable: function(s){
+                    /*$(s.container).slideUp();*/
+                }
+            });
+        }
+
     }
 
 }
@@ -2987,6 +3345,94 @@ function loadProfilePage(){
             EMail: userInfo.EMail,
         }
     });
+}
+
+function loadAutomatedReportsPage() {
+    var userInfo = getUserinfo();
+
+    var data = {
+        MajorToken: userInfo.MajorToken,
+        MinorToken: userInfo.MinorToken
+    };
+
+    /*var aReportList = result.Data;
+    setAReportList(aReportList);*/
+    //console.log(result);
+   /* mainView.router.load({
+        url:'resources/templates/automated.reports.html',
+        context:{
+
+        }
+    });*/
+    App.showPreloader();
+    $.ajax({
+        type: "GET",
+        url: API_URL.GET_AUTOMATED_REPORT_LIST,
+        data: data,
+        async: true,
+        crossDomain: true,
+        cache: false,
+        success: function (result) {
+            App.hidePreloader();
+            if (result.MajorCode === '000' ) {
+                setAReportList(result.Data);
+                console.log(result);
+                mainView.router.load({
+                    url:'resources/templates/automated.reports.html',
+                    context:{
+
+                    }
+                });
+
+            }else{
+                App.alert(LANGUAGE.PROMPT_MSG013);
+            }
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown){
+            App.hidePreloader(); App.alert(LANGUAGE.COM_MSG02);
+        }
+    });
+}
+
+function loadContactsPage() {
+    var userInfo = getUserinfo();
+
+    var data = {
+        MajorToken: userInfo.MajorToken,
+        //MinorToken: userInfo.MinorToken
+    };
+
+    App.showPreloader();
+    $.ajax({
+        type: "GET",
+        url: API_URL.GET_CONTACT_USERS_LIST,
+        data: data,
+        async: true,
+        crossDomain: true,
+        cache: false,
+        success: function (result) {
+            App.hidePreloader();
+
+
+                setContactList(result);
+                //console.log(result);
+                mainView.router.load({
+                    url:'resources/templates/contacts.html',
+                    context:{
+
+                    }
+                });
+
+
+
+
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown){
+            App.hidePreloader(); App.alert(LANGUAGE.COM_MSG02);
+        }
+    });
+
+
 }
 
 function loadGeofencePage(){
@@ -3030,6 +3476,32 @@ function loadGeofencePage(){
     });
 
 
+}
+
+function getContactsFromServer(){
+    var userInfo = getUserinfo();
+
+    var data = {
+        MajorToken: userInfo.MajorToken,
+        //MinorToken: userInfo.MinorToken
+    };
+
+    $.ajax({
+        type: "GET",
+        url: API_URL.GET_CONTACT_USERS_LIST,
+        data: data,
+        async: true,
+        crossDomain: true,
+        cache: false,
+        success: function (result) {
+
+            setContactList(result);
+
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown){
+            App.hidePreloader(); App.alert(LANGUAGE.COM_MSG02);
+        }
+    });
 }
 
 function getGeoFenceListFromServer(){
@@ -3112,12 +3584,11 @@ function loadPageSupport(){
 
     var href = API_URL.URL_SUPPORT.format(param.name,param.loginName,param.email,param.phone,param.service);
 
-    /*if (typeof navigator !== "undefined" && navigator.app) {
+    if (typeof navigator !== "undefined" && navigator.app) {
         navigator.app.loadUrl(href, {openExternal: true});
     } else {
         window.open(href,'_blank');
-    }*/
-    window.open(href, '_blank', 'location=yes');
+    }
 }
 
 function loadResetPwdPage(){
@@ -3134,7 +3605,7 @@ function loadResetPwdPage(){
     if (params && imgFor.assetList) {
         var pattern = /^IMEI_/i;
         if (params.Icon && pattern.test(params.Icon)) {
-            assetImg = '<img class="item_asset_img" src="https://upload.quiktrak.co/Attachment/images/'+params.Icon+'?'+ new Date().getTime()+'alt="">';
+            assetImg = '<img class="item_asset_img" src="http://upload.quiktrak.co/Attachment/images/'+params.Icon+'?'+ new Date().getTime()+'alt="">';
         }else if (params.Name) {
             params.Name = $.trim(params.Name);
             var splitted = params.Name.split(' ');
@@ -3159,8 +3630,8 @@ function loadResetPwdPage(){
 
 function getAssetImg(params, imgFor){
     var assetImg = '';
+    var pattern = /^IMEI_/i;
     if (params && imgFor.assetList) {
-        var pattern = /^IMEI_/i;
         if (params.Icon && pattern.test(params.Icon)) {
             assetImg = '<img class="item_asset_img" src="https://upload.quiktrak.co/Attachment/images/'+params.Icon+'?'+ new Date().getTime()+' alt="">';
         }else if (params.Name) {
@@ -3188,6 +3659,13 @@ function getAssetImg(params, imgFor){
 
         }else if(params.IMEI){
             assetImg = '<div class="item_asset_img bg-boatwatch"><div class="text-a-c vertical-center user_f_l color-white">'+params.IMEI[0]+params.IMEI[1]+'</div></div>';
+        }
+    }else if(params && imgFor.smartSelect){
+        // debugger
+        if (params.Icon && pattern.test(params.Icon)) {
+            assetImg = 'https://upload.quiktrak.co/Attachment/images/'+params.Icon+'?'+ new Date().getTime();
+        }else{
+            assetImg = 'resources/images/svg_asset.svg';
         }
     }else{
         assetImg = '<div class="item_asset_img bg-boatwatch"><div class="text-a-c vertical-center user_f_l color-white">?</div></div>';
@@ -3369,7 +3847,7 @@ function updateGeofenceMarkerGroup(assets, geofenceEdit){
 function updateGeofenceAddress(latlng){
     var container = $$('body');
     if (container.children('.progressbar, .progressbar-infinite').length) return; //don't run all this if there is a current progressbar loading
-    App.showProgressbar(container,'indigo');
+    App.showProgressbar(container,'gray');
     Protocol.Helper.getAddressByGeocoder(latlng,function(address){
         $$('body [name="geofenceAddress"]').val(address);
         App.hideProgressbar();
@@ -3477,7 +3955,6 @@ function loadStatusPage(){
             assetStats.temperature = assetFeaturesStatus.temperature.value;
         }
         if (assetFeaturesStatus.stopped) {
-            //console.log(assetFeaturesStatus.stopped);
             assetStats.stoppedDuration = assetFeaturesStatus.stopped.duration;
         }
         /*if (assetFeaturesStatus.geolock) {
@@ -3566,7 +4043,7 @@ function changeGeolockState(params){
 
         var container = $$('body');
         if (container.children('.progressbar, .progressbar-infinite').length) return; //don't run all this if there is a current progressbar loading
-        App.showProgressbar(container,'indigo');
+        App.showProgressbar(container,'gray');
         JSON1.request(url, function(result){
                 console.log(result);
                 if (result.MajorCode == '000') {
@@ -3889,6 +4366,7 @@ function loadAlarmPage(params){
             offline24: offlineOptions['24'],
             offline48: offlineOptions['48'],
             offline72: offlineOptions['72'], */
+
             InputInterval: params.InputInterval ? params.InputInterval : 5,
         }
     });
@@ -4404,7 +4882,7 @@ function updateAssetData(parameters){
 
     var container = $$('body');
     if (container.children('.progressbar, .progressbar-infinite').length) return; //don't run all this if there is a current progressbar loading
-    App.showProgressbar(container,'indigo');
+    App.showProgressbar(container,'gray');
 
     JSON1.request(url, function(result){
 
@@ -4438,6 +4916,7 @@ function updateAssetData(parameters){
 }
 
 function updateMarkerPositionTrack(data){
+	//console.log('updateMarkerPositionTrack');
         var asset = POSINFOASSETLIST[TargetAsset.ASSET_IMEI];
 
         if (asset) {
@@ -5153,7 +5632,7 @@ function getNewNotifications(params){
     if (MinorToken && deviceToken) {
         var container = $$('body');
         if (container.children('.progressbar, .progressbar-infinite').length) return; //don't run all this if there is a current progressbar loading
-        App.showProgressbar(container,'indigo');
+        App.showProgressbar(container,'gray');
 
         var url = API_URL.URL_GET_NEW_NOTIFICATIONS.format(MinorToken,deviceToken);
         notificationChecked = 0;
@@ -5451,7 +5930,184 @@ function showMsgNotification(arrMsgJ){
         }
     }
 }
+function setContactList(list) {
+    if (list && list.length) {
+        for (let i = list.length - 1; i >= 0; i--) {
+            list[i].FullName = list[i].FirstName + ' ' + list[i].SubName;
+            list[i].FullName.trim();
+        }
+        list.sort(function(a,b){
+            if(a.FullName.toLowerCase() < b.FullName.toLowerCase()) return -1;
+            if(a.FullName.toLowerCase() > b.FullName.toLowerCase()) return 1;
+            return 0;
+        });
+    }
+    localStorage.setItem("COM.QUIKTRAK.LIVE.CONTACTLIST", JSON.stringify(list));
+}
+function getContactList(){
+    var ret = null;var str = localStorage.getItem("COM.QUIKTRAK.LIVE.CONTACTLIST");if(str){ret = JSON.parse(str);}return ret;
+}
+function setAReportList(list){
+    localStorage.setItem("COM.QUIKTRAK.LIVE.AREPORTSLIST", JSON.stringify(list));
+}
+function getAReportList(){
+    var ret = null;var str = localStorage.getItem("COM.QUIKTRAK.LIVE.AREPORTSLIST");if(str){ret = JSON.parse(str);}return ret;
+}
+function editContact(code) {
+    let contactList = getContactList();
+    let contact = contactList.find(cotact => cotact.Code === code);
 
+    mainView.router.load({
+        url:'resources/templates/contact.add.html',
+        context:{
+            PageName: LANGUAGE.CONTACTS_MSG01,
+            Code: contact.Code,
+            FirstName: contact.FirstName,
+            SubName: contact.SubName,
+            EMail: contact.EMail,
+            Mobile: contact.Mobile,
+        }
+    });
+}
+function deleteContact(code, index) {
+    var userInfo = getUserinfo();
+
+    let data = {
+        MajorToken: userInfo.MajorToken,
+        MinorToken: code,
+    };
+
+
+
+    App.showPreloader();
+    $.ajax({
+        type: "GET",
+        url: API_URL.CONTACT_USER_DELETE,
+        data: data,
+        async: true,
+        crossDomain: true,
+        cache: false,
+        success: function (result) {
+            App.hidePreloader();
+            if (result.MajorCode === '000') {
+                var listContainer = $$('.contactList ul');
+                var itemDelete = listContainer.find('li[data-index="'+index+'"]');
+                itemDelete.hide();
+
+                virtualContactList.deleteItem(index);
+            }else{
+                App.alert(LANGUAGE.PROMPT_MSG013);
+            }
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown){
+            App.hidePreloader(); App.alert(LANGUAGE.COM_MSG02);
+        }
+    });
+
+
+
+}
+function editAReport(code) {
+    var reportList = getAReportList();
+    var assetList = formatArrAssetList();
+    var userInfo = getUserinfo();
+    var report = false;
+    if(reportList && reportList.length){
+        report = reportList.find( r => r.Code === code);
+    }
+
+    var ScheduleOptions = Protocol.Helper.getScheduleOptions(report ? report.ExecuteType : false);
+    var WeekdayOptions = Protocol.Helper.getWeekdayOptions(report && report.ExecuteType === 1 ? report.ExecuteDay : false);
+    var MonthdayOptions = Protocol.Helper.getMonthdayOptions(report && report.ExecuteType === 3 ? report.ExecuteDay : false);
+    var contacts = getContactList();
+    var customEmails = [];
+
+    if(contacts && contacts.length){
+        contacts.push({
+            EMail: userInfo.User.EMail,
+            FirstName: userInfo.User.FirstName,
+            SubName: userInfo.User.SubName,
+            FullName: userInfo.User.FirstName + ' ' + userInfo.User.SubName,
+            /*Code: userInfo.MajorToken,
+            CustomerCode: userInfo.MinorToken,*/
+            Code: userInfo.MinorToken,
+            CustomerCode: userInfo.MajorToken,
+        });
+    }
+
+    if(report){
+        if(report.ContactList && report.ContactList.length && contacts && contacts.length){
+            report.ContactList.forEach(function (el) {
+                let contact = contacts.find( c => c.Code === el);
+                if(contact) contact.Selected = true;
+            })
+        }
+
+        if(report.AssetList && report.AssetList.length && assetList && assetList.length ){
+            report.AssetList.forEach(function (el) {
+                let asset = assetList.find( a => a.Id === el);
+                if(asset) asset.Selected = true;
+            })
+        }
+
+        if(report.Content){
+            customEmails = report.Content.split('\r\n');
+        }
+    }
+
+    mainView.router.load({
+        url:'resources/templates/automated.reports.add.html',
+        context:{
+            PageName: report ? LANGUAGE.AUTOMATED_REPORTS_MSG13 : LANGUAGE.AUTOMATED_REPORTS_MSG00,
+            Code: report && report.Code ? report.Code : '',
+            Name: report && report.Name ? report.Name : '',
+            Assets: assetList,
+            ScheduleOptions: ScheduleOptions,
+            WeekdayOptions: WeekdayOptions,
+            MonthdayOptions: MonthdayOptions,
+            Emails: contacts,
+            CustomEmails: customEmails,
+            ScheduleSelected: report ? report.ExecuteType : 1,
+            State: report ? report.State : 1,
+        }
+    });
+}
+
+function deleteAReport(code, index) {
+    var userInfo = getUserinfo();
+    var data = {
+        MajorToken: userInfo.MajorToken,
+        Code: code
+    };
+
+    App.showPreloader();
+    $.ajax({
+        type: "GET",
+        url: API_URL.AUTOMATED_REPORT_DELETE,
+        data: data,
+        async: true,
+        crossDomain: true,
+        cache: false,
+        success: function (result) {
+            App.hidePreloader();
+            if (result.MajorCode === '000' ) {
+
+                //Fix: some time virtual list do not remove deleted items, so first we hide deleted then remove
+                var geofenceListContainer = $$('.aReportsList ul');
+                var itemDelete = geofenceListContainer.find('li[data-index="'+index+'"]');
+                itemDelete.hide();
+
+                virtualAReportsList.deleteItem(index);
+
+            }else{
+                App.alert(LANGUAGE.PROMPT_MSG013);
+            }
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown){
+            App.hidePreloader(); App.alert(LANGUAGE.COM_MSG02);
+        }
+    });
+}
 function setGeoFenceList(list){
     localStorage.setItem("COM.QUIKTRAK.LIVE.GEOFENCELIST", JSON.stringify(list));
 }
@@ -5613,7 +6269,7 @@ function saveGeofence(url, params){
               cache: false,
         crossDomain: true,
             success: function (result) {
-                console.log(result);
+                //console.log(result);
                 App.hidePreloader();
                 if (result.MajorCode == '000') {
                     //setGeoFenceList(result.Data);
@@ -5663,6 +6319,7 @@ function formatArrAssetList(){
         var keys = Object.keys(assetList);
 
         $.each(keys, function( index, value ) {
+            assetList[value].AssetImg = getAssetImg(assetList[value], {'smartSelect':true});
             newAssetlist.push(assetList[value]);
         });
 
@@ -5697,13 +6354,18 @@ function showCustomMessage(params){
 
 function showUserGuide(){
     var href = 'https://login.boatfix.co/Attached/WebSites/BoatFix/manuals/app-user-guide.pdf';
-    /*if (typeof navigator !== "undefined" && navigator.app) {
+    if (typeof navigator !== "undefined" && navigator.app) {
         navigator.app.loadUrl(href, {openExternal: true});
     } else {
         window.open(href,'_blank');
-    }*/
-    window.open(href, '_blank', 'location=yes');
+    }
 }
+
+function validateEmail(email) {
+    const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
+}
+
 
 
 /* ASSET EDIT PHOTO */

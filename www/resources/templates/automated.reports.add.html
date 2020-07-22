@@ -1,0 +1,184 @@
+<div class="page areport_add_page" data-page="automated.reports.add">
+        <input type="hidden" name="areportEdit" value="{{Edit}}">
+      <div class="navbar  bw_top_shadow">
+        <div class="navbar-inner">
+            <div class="left">
+              <a href="#" class="back link"> <i class="f7-icons">arrow_left</i></a>
+            </div>
+            <div class="left navbar_title">{{PageName}}</div>
+            <div class="right">
+              <a href="#" class="link color-boatwatch saveReport"><i class="f7-icons">check</i></a>
+            </div>
+        </div>
+      </div>
+    <div class="page-content">
+
+        <div class="list-block media-list no-hairlines mt-0">
+            <ul>
+                <li>
+                    <div class="item-content">
+                        <div class="item-inner">
+                            <div class="item-title label color-boatwatch">{{@global.LANGUAGE.COM_MSG56}}</div>
+                            <div class="item-input">
+                                <input type="text" placeholder="{{@global.LANGUAGE.COM_MSG56}}" name="Type" value="Overview" maxlength="200" data-type-code="5" readonly>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="item-content">
+                        <div class="item-inner">
+                            <div class="item-title label color-boatwatch">{{@global.LANGUAGE.AUTOMATED_REPORTS_MSG01}}</div>
+                            <div class="item-input">
+                                <input type="text" placeholder="{{@global.LANGUAGE.AUTOMATED_REPORTS_MSG01}}" name="Name" value="{{Name}}" maxlength="200">
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <a href="#" class="item-link smart-select smart-select-assets item-with-arrow" data-searchbar="true" data-searchbar-placeholder="Enter Name">
+                        <select name="assets" multiple>
+                            {{#each Assets}}
+                            <option data-option-image="{{AssetImg}}" value="{{Id}}" data-imei="{{IMEI}}" {{#if Selected}} selected {{/if}}>{{Name}}</option>
+                            {{/each}}
+                        </select>
+                        <div class="item-content">
+                            <div class="item-inner with-bottom-border">
+                                <div class="item-title label color-boatwatch">{{@global.LANGUAGE.AUTOMATED_REPORTS_MSG02}}</div>
+                                <div class="item-after">Assets</div>
+                            </div>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="item-link smart-select smart-select-schedule item-with-arrow">
+                        <select name="IntervalType">
+                            {{#each ScheduleOptions}}
+                            <option value="{{Val}}" {{#if Selected}} selected {{/if}}>{{Name}}</option>
+                            {{/each}}
+                        </select>
+                        <div class="item-content">
+                            <div class="item-inner with-bottom-border">
+                                <div class="item-title label color-boatwatch">{{@global.LANGUAGE.AUTOMATED_REPORTS_MSG03}}</div>
+                               <!-- <div class="item-after">schedule</div>-->
+                            </div>
+                        </div>
+                    </a>
+                </li>
+
+                <li class="schedule-depend-option schedule-depend-option-weekday">
+                    <a href="#" class="item-link smart-select smart-select-weekday item-with-arrow">
+                        <select name="IntervalValue1">
+                            {{#each WeekdayOptions}}
+                            <option value="{{Val}}" {{#if Selected}} selected {{/if}}>{{Name}}</option>
+                            {{/each}}
+                        </select>
+                        <div class="item-content">
+                            <div class="item-inner with-bottom-border">
+                                <div class="item-title label color-boatwatch">{{@global.LANGUAGE.AUTOMATED_REPORTS_MSG11}}</div>
+                                <!--<div class="item-after">day</div>-->
+                            </div>
+                        </div>
+                    </a>
+                </li>
+
+                <li class="schedule-depend-option schedule-depend-option-monthday">
+                    <a href="#" class="item-link smart-select smart-select-monthday item-with-arrow">
+                        <select name="IntervalValue3">
+                            {{#each MonthdayOptions}}
+                            <option value="{{Val}}" {{#if Selected}} selected {{/if}}>{{Name}}</option>
+                            {{/each}}
+                        </select>
+                        <div class="item-content">
+                            <div class="item-inner with-bottom-border">
+                                <div class="item-title label color-boatwatch">{{@global.LANGUAGE.AUTOMATED_REPORTS_MSG11}}</div>
+                                <!--<div class="item-after">day</div>-->
+                            </div>
+                        </div>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="#" class="item-link smart-select smart-select-emails item-with-arrow" data-searchbar="true" data-searchbar-placeholder="Enter Name">
+                        <select name="Emails" multiple>
+                            {{#each Emails}}
+                                {{#if EMail}}
+                                <option value="{{Code}}" {{#if Selected}} selected {{/if}}>{{FullName}} ({{EMail}})</option>
+                                {{/if}}
+                            {{/each}}
+                        </select>
+                        <div class="item-content">
+                            <div class="item-inner with-bottom-border">
+                                <div class="item-title label color-boatwatch">{{@global.LANGUAGE.AUTOMATED_REPORTS_MSG04}}</div>
+                                <div class="item-after">email</div>
+                            </div>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <div class="item-content with-additional-button">
+                        <div class="item-inner">
+                            <div class="item-title label color-boatwatch">{{@global.LANGUAGE.COM_MSG55}}</div>
+                            <div class="item-input">
+                                <input type="email" placeholder="{{@global.LANGUAGE.COM_MSG55}}" name="CustomEmail" value="" maxlength="200">
+                            </div>
+                            <a href="#" class="item-additional-button link color-boatwatch addCustomContact"><i class="icon icon-header-add"></i></a>
+                        </div>
+
+                    </div>
+                </li>
+                <span class="custom-emails-wrapper">
+                    {{#each CustomEmails}}
+                        {{#if this}}
+                            <li>
+                                <div class="item-content with-additional-button">
+                                    <div class="item-inner">
+                                        <div class="item-title label color-boatwatch">{{@global.LANGUAGE.COM_MSG55}}</div>
+                                        <div class="item-input">
+                                            <input type="email" placeholder="{{@global.LANGUAGE.COM_MSG55}}" name="CustomEmail" value="{{this}}" readonly maxlength="200">
+                                        </div>
+                                        <a href="#" class="item-additional-button link color-red removeCustomContact"><i class="icon icon-other-remove"></i></a>
+                                    </div>
+
+                                </div>
+                            </li>
+                        {{/if}}
+                    {{/each}}
+                </span>
+                <!--<li class="align-top">
+                    <div class="item-content">
+                        <div class="item-inner">
+                            <div class="item-title label color-boatwatch">{{@global.LANGUAGE.AUTOMATED_REPORTS_MSG05}}</div>
+                            <div class="item-input">
+                                <textarea name="Remark">{{Remark}}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                </li>-->
+
+                <li >
+                    <div class="item-content no-fastclick ">
+                        <div class="item-inner">
+                            <div class="item-title-row">
+                                <div class="item-title color-boatwatch">{{@global.LANGUAGE.AUTOMATED_REPORTS_MSG12}}</div>
+                                <div class="item-after">
+                                    <div class="item-input align-self-center">
+                                        <label class="label-switch">
+                                            <input type="checkbox"  name="State" {{#if State}} checked="checked" {{/if}}>
+                                            <div class="checkbox"></div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
+            </ul>
+        </div>
+
+
+    </div>
+
+</div>
+

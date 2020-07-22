@@ -1,0 +1,68 @@
+<div class="page contact_add_page" data-page="contact.add">
+    <input type="hidden" name="contactEdit" value="{{Code}}">
+	<div class="navbar bg-boatwatch bw_top_shadow">
+        <div class="navbar-inner">
+            <div class="left">
+            	<a href="#" class="back link"> <i class="f7-icons">arrow_left</i></a>
+            </div>
+            <div class="left navbar_title">{{PageName}}</div>
+           	<div class="right">
+           		<a href="#" class="link color-boatwatch saveContact"><i class="f7-icons">check</i></a>
+           	</div>
+        </div>
+    </div>
+    <div class="page-content">
+
+        <div class="list-block media-list no-hairlines m-0">
+            <ul>
+
+                <li>
+                    <div class="item-content">
+                        <div class="item-inner">
+                            <div class="item-title label color-boatwatch">{{@global.LANGUAGE.PROFILE_MSG01}}</div>
+                            <div class="item-input">
+                                <input type="text" placeholder="{{@global.LANGUAGE.PROFILE_MSG01}}" name="FirstName" value="{{FirstName}}" maxlength="200">
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="item-content">
+                        <div class="item-inner">
+                            <div class="item-title label color-boatwatch">{{@global.LANGUAGE.PROFILE_MSG02}}</div>
+                            <div class="item-input">
+                                <input type="text" placeholder="{{@global.LANGUAGE.PROFILE_MSG02}}" name="SubName" value="{{SubName}}" maxlength="200" >
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="item-content">
+                        <div class="item-inner">
+                            <div class="item-title label color-boatwatch">Email</div>
+                            <div class="item-input">
+                                <input type="email" placeholder="Email" name="EMail" value="{{EMail}}" maxlength="200">
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="item-content">
+                        <div class="item-inner">
+                            <div class="item-title label color-boatwatch">{{@global.LANGUAGE.PROFILE_MSG03}}</div>
+                            <div class="item-input">
+                                <input type="tel" placeholder="{{@global.LANGUAGE.PROFILE_MSG03}}" name="Mobile" value="{{Mobile}}" maxlength="200">
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
+
+            </ul>
+        </div>
+
+
+    </div>
+
+</div>
+
